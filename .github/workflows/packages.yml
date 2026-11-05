@@ -14,11 +14,11 @@ jobs:
         with:
           python-version: '3.12.4'
       - run: python -m pip install -r requirements.txt pyinstaller==6.22.3
-      - run: bash packaging/build_macos.sh
+      - run: bash packaging/macos/build_macos.sh
       - uses: actions/upload-artifact@v4
         with:
           name: macos-universal2
-          path: dist/RoastSeeNEXT-Artisan-macOS-*.zip
+          path: dist/macos/RoastSeeNEXT-Artisan-macOS-*.zip
           if-no-files-found: error
   macos-test:
     needs: macos
@@ -35,15 +35,15 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: macos-universal2
-          path: dist
+          path: build/macos-check
       - name: Test the same universal ZIP on each architecture
         run: |
-          mkdir -p dist/check
-          ditto -x -k dist/RoastSeeNEXT-Artisan-macOS-universal2.zip dist/check
-          BUNDLE=dist/check/RoastSeeNEXT-Artisan-macOS-universal2
+          mkdir -p build/macos-check/unpacked
+          ditto -x -k build/macos-check/RoastSeeNEXT-Artisan-macOS-universal2.zip build/macos-check/unpacked
+          BUNDLE=build/macos-check/unpacked/RoastSeeNEXT-Artisan-macOS-universal2
           codesign --verify --deep --strict "$BUNDLE/RoastSeeNEXTBridge.app"
-          PYTHONPATH=. python packaging/verify_macos.py "$BUNDLE"
-          python packaging/verify_universal2.py "$BUNDLE/RoastSeeNEXTBridge.app"
+          PYTHONPATH=. python packaging/macos/verify_macos.py "$BUNDLE"
+          python packaging/macos/verify_universal2.py "$BUNDLE/RoastSeeNEXTBridge.app"
           uname -m
   windows:
     runs-on: windows-latest
@@ -53,11 +53,11 @@ jobs:
         with:
           python-version: '3.12.4'
       - run: python -m pip install -r requirements.txt pyinstaller==6.22.3
-      - run: ./packaging/build_windows.ps1
+      - run: ./packaging/windows/build_windows.ps1
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
-          path: dist/RoastSeeNEXT-Artisan-Windows-x64.zip
+          path: dist/windows/RoastSeeNEXT-Artisan-Windows-x64.zip
           if-no-files-found: error
   publish:
     needs: [macos-test, windows]

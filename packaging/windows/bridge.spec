@@ -1,8 +1,8 @@
 from pathlib import Path
 
-root = Path(SPECPATH).parent
+root = Path(SPECPATH).parents[1]
 a = Analysis(
-    [str(root / "packaging" / "bridge_entry.py"), str(root / "packaging" / "poll_entry.py")],
+    [str(root / "packaging/windows/bridge_entry.py"), str(root / "packaging/common/poll_entry.py")],
     pathex=[str(root)],
 )
 pyz = PYZ(a.pure)

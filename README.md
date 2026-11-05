@@ -1,7 +1,7 @@
 <a href="https://lebrewtech.com/">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/lebrew-wordmark-dark.png">
-    <img align="right" src="assets/lebrew-wordmark.png" alt="LeBrew" width="200">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/lebrew-wordmark-dark.png">
+    <img align="right" src="assets/brand/lebrew-wordmark.png" alt="LeBrew" width="200">
   </picture>
 </a>
 
@@ -99,7 +99,7 @@ Artisan also offers native NEXT support. This project remains a standalone compa
 | Start | Read-only by default; optional `roasting` then `start` commands |
 | Run | Windows x64 or one macOS Universal 2 package for both chip families; Python source is also available |
 
-![NEXT → bridge → state file → poller → Artisan](assets/data-flow.svg)
+![NEXT → bridge → state file → poller → Artisan](assets/diagrams/data-flow.svg)
 
 > **Firmware semantics matter.** The parser accepts the 27-byte binary frame used by the inspected 1.2.0 firmware, plus two ASCII formats. Some legacy field names do not describe their current firmware meaning. In particular, read the yellow-time and variability notes below before using those channels.
 
@@ -171,7 +171,7 @@ The receiver scans and establishes GATT itself; pairing in Windows Settings is n
 
 All offsets below start at zero. Multibyte payload values and the CRC are **little-endian**. Floats are IEEE 754 binary32. The packed payload is equivalent to Python `struct` format **`<fBffHHBH`**, with no padding.
 
-![27-byte binary frame layout and CRC coverage](assets/binary-frame.svg)
+![27-byte binary frame layout and CRC coverage](assets/diagrams/binary-frame.svg)
 
 ```text
 AA 55 │ 14 │ 20-byte payload │ CRC low CRC high │ 53 42
@@ -334,17 +334,41 @@ Add `--auto-start-live` to the receiver only when automatic measurement startup 
 To reproduce the Windows x64 bundle, use Windows x64 Python 3.12, install runtime requirements and `pyinstaller==6.22.3`, then run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
+powershell -ExecutionPolicy Bypass -File packaging/windows/build_windows.ps1
 ```
 
-The script runs the regression tests, builds both executables with a shared runtime, checks the frozen offline data path, and writes the ZIP under `dist/`. Dependency license notices are included in the bundle. See [LICENSE](LICENSE) for the project's MIT license.
+The script runs the regression tests, builds both executables with a shared runtime, checks the frozen offline data path, and writes the ZIP under `dist/windows/`. Dependency license notices are included in the bundle. See [LICENSE](LICENSE) for the project's MIT license.
 
-On a Mac with python.org's Universal 2 Python 3.12 and universal runtime dependencies installed, install `pyinstaller==6.22.3`, then run `bash packaging/build_macos.sh`. It builds Universal 2, adds the Bluetooth permission description, checks the signature and mock/poll data path, verifies both CPU slices in every Mach-O file, and creates a ZIP with launcher permissions preserved. The GitHub Actions workflow extracts and tests that same ZIP separately on Apple Silicon and Intel before publishing it alongside the Windows package.
+On a Mac with python.org's Universal 2 Python 3.12 and universal runtime dependencies installed, install `pyinstaller==6.22.3`, then run `bash packaging/macos/build_macos.sh`. It builds Universal 2, adds the Bluetooth permission description, checks the signature and mock/poll data path, verifies both CPU slices in every Mach-O file, and creates a ZIP under `dist/macos/` with launcher permissions preserved. The GitHub Actions workflow extracts and tests that same ZIP separately on Apple Silicon and Intel before publishing it alongside the Windows package.
+
+### Repository layout
+
+```text
+next_artisan_bridge/       Bridge source
+  tests/                  Protocol, storage and state-path tests
+packaging/
+  windows/                Windows build, launchers and bundle check
+  macos/                  Universal 2 build, launchers and Mac checks
+  common/                 Shared poller entry point
+assets/
+  brand/                  LeBrew wordmarks and application icon
+  diagrams/               Data-flow and packet illustrations
+licenses/                 Third-party license texts
+.github/workflows/        Native build and release workflow
+build/                    Temporary build files (not committed)
+dist/                     Generated/downloaded packages (not committed)
+  windows/                Windows bundle and ZIP
+  macos/                  Universal Mac bundle and ZIP
+  releases/<version>/     Downloaded release archives
+```
+
+The bilingual READMEs, project license and dependency notices remain at the repository root. Downloaded packages keep their launchers and user guides at the top level for easy access.
 
 ## 🗓️ Version history
 
 | Bridge version | Date | Changes |
 | --- | --- | --- |
+| v0.2.3 | 2026-11-05 | Organizes packaging by platform and artwork by purpose, with platform-specific build output folders. User launchers are unchanged. |
 | v0.2.2 | 2026-11-05 | One Mac Universal 2 download for Intel and Apple Silicon, with the same archive checked on both architectures. |
 | v0.2.1 | 2026-11-05 | Adds native Mac packaging, Bluetooth permission text, Mac launchers, a fixed shared state path, and simple Mac instructions. |
 | main (not yet packaged in a public release) | 2026-11-05 | Moves a simple four-step guide to the top of both READMEs; detailed setup remains below. Executables are unchanged. |

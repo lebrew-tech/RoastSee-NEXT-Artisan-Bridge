@@ -1,8 +1,8 @@
 from pathlib import Path
 
-root = Path(SPECPATH).parent
+root = Path(SPECPATH).parents[1]
 a = Analysis(
-    [str(root / "packaging/mac_bridge_entry.py"), str(root / "packaging/poll_entry.py")],
+    [str(root / "packaging/macos/mac_bridge_entry.py"), str(root / "packaging/common/poll_entry.py")],
     pathex=[str(root)],
 )
 pyz = PYZ(a.pure)
@@ -16,10 +16,10 @@ poll = EXE(
 )
 coll = COLLECT(bridge, poll, a.binaries, a.datas, name="macos-runtime")
 BUNDLE(
-    coll, name="RoastSeeNEXTBridge.app", icon=str(root / "assets/lebrew.icns"),
+    coll, name="RoastSeeNEXTBridge.app", icon=str(root / "assets/brand/lebrew.icns"),
     bundle_identifier="com.lebrew.nextartisanbridge",
     info_plist={
-        "CFBundleShortVersionString": "0.2.2",
+        "CFBundleShortVersionString": "0.2.3",
         "NSBluetoothAlwaysUsageDescription": "Connect to RoastSee NEXT to receive roast data for Artisan.",
         "NSHighResolutionCapable": True,
     },

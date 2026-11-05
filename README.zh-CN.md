@@ -1,7 +1,7 @@
 <a href="https://lebrewtech.com/">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/lebrew-wordmark-dark.png">
-    <img align="right" src="assets/lebrew-wordmark.png" alt="LeBrew" width="200">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/lebrew-wordmark-dark.png">
+    <img align="right" src="assets/brand/lebrew-wordmark.png" alt="LeBrew" width="200">
   </picture>
 </a>
 
@@ -99,7 +99,7 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 | 启动 | 默认只读；可显式发送 `roasting`、`start` 启动测量 |
 | 运行 | Windows x64、同时支持两种芯片的 macOS Universal 2 包，也可运行 Python 源码 |
 
-![NEXT 经桥接、状态文件和轮询程序接入 Artisan](assets/data-flow.svg)
+![NEXT 经桥接、状态文件和轮询程序接入 Artisan](assets/diagrams/data-flow.svg)
 
 > **字段含义取决于固件。** 桥接支持已核查的 1.2.0 固件所用 27 字节二进制帧，以及两种兼容 ASCII 输入。部分历史字段名与当前含义不同，使用前请阅读下文“黄点”和“波动量”的说明。
 
@@ -171,7 +171,7 @@ NEXT 实时二进制没有温度字段，**ET、BT 输出为 `-1`**。温度曲�
 
 以下偏移从 **0** 开始。多字节数据和 CRC 均为**小端**，浮点数为 IEEE754 binary32。数据体紧凑排列、无填充，对应 Python `struct` 格式 **`<fBffHHBH`**。
 
-![27 字节二进制帧布局及 CRC 校验范围](assets/binary-frame.svg)
+![27 字节二进制帧布局及 CRC 校验范围](assets/diagrams/binary-frame.svg)
 
 ```text
 AA 55 │ 14 │ 20 字节数据体 │ CRC低字节 CRC高字节 │ 53 42
@@ -334,17 +334,41 @@ python -m unittest discover -s next_artisan_bridge/tests -v
 重新构建 Windows x64 包：使用 Windows x64 Python 3.12，安装运行依赖和 `pyinstaller==6.22.3`，然后执行：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
+powershell -ExecutionPolicy Bypass -File packaging/windows/build_windows.ps1
 ```
 
-脚本运行回归测试、构建共享运行时的两个程序、验证 EXE 离线链路，最后在 `dist/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
+脚本运行回归测试、构建共享运行时的两个程序、验证 EXE 离线链路，最后在 `dist/windows/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
 
-在 Mac 上使用 python.org 的 Universal 2 Python 3.12 及包含双架构的运行依赖，安装 `pyinstaller==6.22.3` 后运行 `bash packaging/build_macos.sh`。脚本构建 Universal 2，加入蓝牙权限说明，检查签名、模拟帧链路及每个 Mach-O 文件的两种架构，并生成保留执行权限的 ZIP。GitHub Actions 把同一 ZIP 分别交给 Apple Silicon 和 Intel 环境解压、运行验证，通过后才与 Windows 包一起发布。
+在 Mac 上使用 python.org 的 Universal 2 Python 3.12 及包含双架构的运行依赖，安装 `pyinstaller==6.22.3` 后运行 `bash packaging/macos/build_macos.sh`。脚本构建 Universal 2，加入蓝牙权限说明，检查签名、模拟帧链路及每个 Mach-O 文件的两种架构，在 `dist/macos/` 生成保留执行权限的 ZIP。GitHub Actions 把同一 ZIP 分别交给 Apple Silicon 和 Intel 环境解压、运行验证，通过后才与 Windows 包一起发布。
+
+### 目录分类
+
+```text
+next_artisan_bridge/       桥接源码
+  tests/                  协议、存储和状态路径测试
+packaging/
+  windows/                Windows 打包、启动与验收文件
+  macos/                  Mac 通用版打包、启动与验收文件
+  common/                 两个平台共用的轮询入口
+assets/
+  brand/                  LeBrew Logo 和程序图标
+  diagrams/               数据链路图、数据包结构图
+licenses/                 第三方许可证
+.github/workflows/        原生构建及发布流程
+build/                    临时构建文件，不入库
+dist/                     生成或下载的交付包，不入库
+  windows/                Windows 程序目录和 ZIP
+  macos/                  Mac 通用程序目录和 ZIP
+  releases/<version>/     按版本保存的下载归档
+```
+
+中英文 README、项目许可证和依赖说明保留在仓库根目录。交付包根目录保留启动入口和使用说明，方便直接找到。
 
 ## 🗓️ 版本记录
 
 | 桥接版本 | 日期 | 变化 |
 | --- | --- | --- |
+| v0.2.3 | 2026-11-05 | 打包文件按平台、素材按用途归类，构建产物按平台存放；用户启动入口不变。 |
 | v0.2.2 | 2026-11-05 | Mac 改为一个 Universal 2 下载包，同一文件分别在 Intel 和 Apple Silicon 环境验收。 |
 | v0.2.1 | 2026-11-05 | 加入原生 Mac 打包、蓝牙权限说明、Mac 启动入口、固定共享状态路径和简明使用步骤。 |
 | main（尚未打包为公开发布版） | 2026-11-05 | 将四步简明教程移至两版 README 开头；完整配置保留在后文，EXE 不变。 |
