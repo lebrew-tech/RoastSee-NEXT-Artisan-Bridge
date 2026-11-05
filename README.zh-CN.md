@@ -39,8 +39,8 @@ RoastSee NEXT → Artisan
 
 1. **下载并完整解压** [Windows ZIP 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)。保留整个文件夹，不需要安装 Python。
 2. **启动桥接。** 打开电脑蓝牙，关闭连接 NEXT 的手机 App，运行 `START_HERE.cmd`；在 NEXT 上进入实时烘焙页并开始测量。保持桥接窗口打开，等日志出现 `received live sample`。
-3. **配置 Artisan。** 先保存原配置，再进入 **Config → Mode → Expert**，然后 **Config → Device → Program**；将 **External Program** 设为解压目录内 `artisan_next_poll.exe` 的完整路径。这会改变主设备选择。
-4. **显示曲线。** 在 **Extra Devices** 添加 **`+Program 34`**，打开色值和声音通道的 **LCD / Curve** 开关，然后在 Artisan 点击 **ON**。
+3. **配置 Artisan。** 先用 **Help → Save Settings** 保存原配置，再进入 **Config → Mode → Expert**，然后 **Config → Device**，输入方式选择 **Prog**。在 **External Program** 上排点击 **Select**，选择解压目录内的 `artisan_next_poll.exe`；**Output 不勾选**。这会改变主设备选择。
+4. **显示曲线。** 在 **Extra Devices** 添加 **`Program 34`**，打开色值和声音通道的 **LCD / Curve**。点击 **ON** 查看数据，需要记录曲线时再点击 **START**。
 
 **停止：** 在桥接窗口按 **Ctrl+C**。其他数据通道和自动启动测量的方式见[详细配置](#详细配置)。
 
@@ -49,7 +49,7 @@ RoastSee NEXT → Artisan
 1. **只下载一个 Mac ZIP**：[下载页](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)选择 **`RoastSeeNEXT-Artisan-macOS-universal2.zip`**，Intel 和 M 系列 Mac 都用它。完整解压，保留整个文件夹，不要单独移出 `.app`；无需安装 Python，也不用判断芯片类型。
 2. **启动桥接。** 打开 `START_HERE.command`，允许蓝牙权限，再在 NEXT 上开始实时测量。保持终端窗口打开；需要自动开始测量时，明确选择 `START_LIVE.command`。
 3. **配置 Artisan。** 按上面第 3 步操作，但 **External Program 选择解压目录里的 `artisan_next_poll`**，没有 `.exe` 后缀，也不要选择 `.app`。改动前先保存原有 Artisan 配置。
-4. 添加 **`+Program 34`**，开启 **LCD / Curve**，点击 **ON**。停止桥接按 **Ctrl+C**。
+4. 添加 **`Program 34`**，开启 **LCD / Curve**，点击 **ON** 查看数据，点击 **START** 开始记录。停止桥接按 **Ctrl+C**。
 
 <a id="mac-first-launch"></a>
 
@@ -153,9 +153,9 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 
 ### 2 · 配置 Artisan
 
-先保存现有 Artisan 配置。下述独立测试接法将**主设备选择改为 Program**，会替换当前主设备选择；它没有同时接入原有烘焙机的温度采集。
+先用 **Help → Save Settings** 保存现有 Artisan 配置。下述独立测试接法将输入方式改为 **Prog**，会替换当前主设备选择；它没有同时接入原有烘焙机的温度采集。
 
-进入 **Config → Mode → Expert**，再进入 **Config → Device**。主设备选 **Program**，**External Program** 填写 `artisan_next_poll.exe` 的完整路径，例如：
+进入 **Config → Mode → Expert**，再进入 **Config → Device**，选择 **Prog** 单选项。在 **External Program** 上排点击 **Select**：Windows 选择 `artisan_next_poll.exe`，Mac 选择解压目录里的 `artisan_next_poll`。下排单独的 **Output 复选框不要勾选**。Windows 路径示例：
 
 ```text
 "C:\Tools\RoastSeeNEXT-Artisan-Windows-x64\artisan_next_poll.exe"
@@ -165,13 +165,12 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 
 | 设备 | 通道 1 | 通道 2 |
 | --- | --- | --- |
-| `+Program 34` | Agtron 色值 | 声学活动指标 `voice` |
-| `+Program 56` | 色值变化率 | 色值波动量，历史名称为滤波字段 |
-| `+Program 78` | 距离 | 黄点时间，见兼容性限制 |
-| `+Program 910` | 黄点标志，见兼容性限制 | 未使用 |
-| `+Program 1112` | 一爆时间 | 一爆色值 |
-| `+Program 1314` | 一爆 ROR | 二爆时间 |
-| `+Program 1516` | 二爆色值 | 二爆 ROR |
+| `Program 34` | Agtron 色值 | 声学活动指标 `voice` |
+| `Program 56` | 色值变化率 | 色值波动量，历史名称为滤波字段 |
+| `Program 78` | 距离 | 桥接锁存时间，不代表已验证的黄点时间 |
+| `Program 910` | 桥接生成标志，不能直接用于自动 DRY | 未使用 |
+
+建议先只配 **Program 34**，需要时再加 **Program 56**。Artisan 的附加设备下拉框会去掉名称前的 `+`。当前官方 Program 接口只读取前 **10 个字段**，没有 Program 1112 / 1314 / 1516 设备；桥接原始输出第 11–16 列的一爆、二爆数据，不能通过这套官方界面直接显示。参见 [官方 External Programs 帮助](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py)。
 
 NEXT 实时二进制没有温度字段，**ET、BT 输出为 `-1`**。温度曲线没有变化不能说明 NEXT 没有传数据，应检查 Extra Device 曲线和桥接日志。兼容的 8 字段 ASCII 扩展可以提供 ET。
 
@@ -274,11 +273,11 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 | `agtron` | 事件时的色值 |
 | `ROR` | 事件时由固件给出的色值变化率 |
 
-数值按键名匹配，允许分隔符和空白有所不同。首个 NUL 或 `A5` 后的填充会被忽略。**整个摘要必须在同一次 Notify 回调中完整到达**，当前没有跨通知重组摘要。四类事件都会写入 JSON，只有 FC/SC 六项进入 Artisan 的第 11–16 字段。摘要 `Y_time` 写入 `yellow_time`，与实时 `time_yellow` 是不同键，所以不会纠正第 8/9 字段。存在事件值不等于固件一定自动检测了该事件。
+数值按键名匹配，允许分隔符和空白有所不同。首个 NUL 或 `A5` 后的填充会被忽略。**整个摘要必须在同一次 Notify 回调中完整到达**，当前没有跨通知重组摘要。四类事件都会写入 JSON；FC/SC 六项还进入轮询原始输出第 11–16 列，但当前官方 Artisan Program 接口不读取这六列。摘要 `Y_time` 写入 `yellow_time`，与实时 `time_yellow` 是不同键，所以不会纠正第 8/9 列。存在事件值不等于固件一定自动检测了该事件。
 
-## 📊 Artisan 输出 · 16 字段
+## 📊 轮询原始输出 · 16 字段
 
-轮询程序每次只向标准输出写一行 CSV，末尾带换行；诊断日志由桥接接收端输出。字段序号从 **1** 开始：
+轮询程序每次只向标准输出写一行 CSV，末尾带换行；诊断日志由桥接接收端输出。**当前官方 Artisan 读取第 1–10 列；第 11–16 列是原始扩展值，不对应官方可配置的 Program 通道。** 字段序号从 **1** 开始：
 
 | 序号 | 含义 | 格式 / 缺省值 |
 | ---: | --- | --- |

@@ -39,8 +39,8 @@ A standalone BLE bridge for coffee-roasting data.
 
 1. **Download and extract** the [Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest). Keep the entire folder together; no Python installation is needed.
 2. **Start the bridge.** Enable Bluetooth, close phone apps connected to NEXT, and run `START_HERE.cmd`. On NEXT, enter live roasting and start measurement. Keep the bridge window open; wait for `received live sample`.
-3. **Set up Artisan.** Save your current configuration. Open **Config → Mode → Expert**, then **Config → Device → Program**. Set **External Program** to the full path of `artisan_next_poll.exe` in the extracted folder. This changes the main-device selection.
-4. **Show the curves.** In **Extra Devices**, add **`+Program 34`** and enable its **LCD / Curve** switches for Agtron and acoustic activity. Click **ON** in Artisan.
+3. **Set up Artisan.** Save your current configuration with **Help → Save Settings**. Open **Config → Mode → Expert**, then **Config → Device** and select **Prog** as the input. In **External Program**, use the upper **Select** button to choose `artisan_next_poll.exe`. Leave **Output** unchecked. This changes the main-device selection.
+4. **Show the curves.** In **Extra Devices**, add **`Program 34`** and enable its **LCD / Curve** switches for Agtron and acoustic activity. Click **ON** to monitor; click **START** when you want to record.
 
 **Stop:** press **Ctrl+C** in the bridge window. For the remaining channels or automatic measurement startup, see [Detailed setup](#setup-details).
 
@@ -49,7 +49,7 @@ A standalone BLE bridge for coffee-roasting data.
 1. **Download one Mac ZIP** from [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest): **`RoastSeeNEXT-Artisan-macOS-universal2.zip`** runs on both Apple Silicon (M-series) and Intel. Extract the entire folder; do not move the `.app` out of it. No Python installation or chip selection is needed.
 2. **Start receiving.** Open `START_HERE.command`; allow Bluetooth access, then start live measurement on NEXT. Keep the Terminal window open. `START_LIVE.command` is the explicit automatic-measurement option.
 3. **Configure Artisan** as in Windows step 3, but select the extracted folder's **`artisan_next_poll`** file as External Program (no `.exe` suffix and not the `.app`). Save your current Artisan configuration first.
-4. Add **`+Program 34`**, enable **LCD / Curve**, and click **ON**. Stop the bridge with **Ctrl+C**.
+4. Add **`Program 34`**, enable **LCD / Curve**, and click **ON** to monitor or **START** to record. Stop the bridge with **Ctrl+C**.
 
 <a id="mac-first-launch"></a>
 
@@ -153,9 +153,9 @@ Download the Windows ZIP from [Releases](https://github.com/lebrew-tech/RoastSee
 
 ### 2 · Configure Artisan
 
-Save your current Artisan configuration first. The simple standalone setup below selects **Program as the main device**, replacing the current main-device selection. It does not combine the bridge with an existing roaster temperature connection.
+Save your current Artisan configuration using **Help → Save Settings** first. This standalone setup selects **Prog** as the input, replacing the current main-device selection. It does not combine the bridge with an existing roaster temperature connection.
 
-Open **Config → Mode → Expert**, then **Config → Device**. Select **Program** and set **External Program** to the full path of `artisan_next_poll.exe`. For example:
+Open **Config → Mode → Expert**, then **Config → Device**. Select the **Prog** radio button. In **External Program**, use the upper **Select** button to choose `artisan_next_poll.exe` on Windows, or the extracted folder's `artisan_next_poll` on Mac. Leave the separate **Output** checkbox unchecked. For example, a Windows path is:
 
 ```text
 "C:\Tools\RoastSeeNEXT-Artisan-Windows-x64\artisan_next_poll.exe"
@@ -165,13 +165,12 @@ Add the following **Extra Devices** and enable each desired **LCD** and/or **Cur
 
 | Device | Channel 1 | Channel 2 |
 | --- | --- | --- |
-| `+Program 34` | Agtron | Acoustic activity (`voice`) |
-| `+Program 56` | Agtron rate | Agtron variability (legacy filtered field) |
-| `+Program 78` | Distance | Yellow time (see limitation) |
-| `+Program 910` | Yellow flag (see limitation) | Unused |
-| `+Program 1112` | First crack time | First crack Agtron |
-| `+Program 1314` | First crack ROR | Second crack time |
-| `+Program 1516` | Second crack Agtron | Second crack ROR |
+| `Program 34` | Agtron | Acoustic activity (`voice`) |
+| `Program 56` | Agtron rate | Agtron variability (legacy filtered field) |
+| `Program 78` | Distance | Bridge-latched time (not a validated yellow time) |
+| `Program 910` | Bridge-generated flag (not validated for DRY) | Unused |
+
+Start with **Program 34**, optionally adding **Program 56**. Artisan removes the leading `+` from extra-device names in the dropdown. The current official Program interface reads only the first **10 values**, and does not provide Program 1112 / 1314 / 1516 devices. The bridge's FC/SC values in raw columns 11–16 therefore do not appear through this setup. See the [official External Programs help](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py).
 
 The NEXT live binary frame has no temperature. **ET and BT are `-1`**. A zero or missing temperature curve does not establish whether the NEXT data arrived; inspect its Extra Device channels and bridge logs. The 8-field ASCII extension can supply ET.
 
@@ -274,11 +273,11 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 | `agtron` | Color value at the event |
 | `ROR` | Color change rate at the event, firmware-supplied |
 
-Separators/whitespace can vary because values are matched by key. The parser ignores bytes after the first NUL or `A5` padding byte. It requires the **entire summary in one notification**; split summaries are not reassembled. All four events enter JSON, but only FC/SC values are mapped to the 16 Artisan slots. Summary `Y_time` is stored as `yellow_time`, distinct from live `time_yellow`, so it does not correct Artisan slots 8/9. Reported event values are not a guarantee of automatic event detection.
+Separators/whitespace can vary because values are matched by key. The parser ignores bytes after the first NUL or `A5` padding byte. It requires the **entire summary in one notification**; split summaries are not reassembled. All four events enter JSON; FC/SC values also occupy raw poller columns 11–16, which the current official Artisan Program interface does not consume. Summary `Y_time` is stored as `yellow_time`, distinct from live `time_yellow`, so it does not correct columns 8/9. Reported event values are not a guarantee of automatic event detection.
 
-## 📊 Artisan output · 16 fields
+## 📊 Raw poller output · 16 fields
 
-The poller writes exactly one CSV line with a trailing newline; diagnostic logging belongs to the receiver. Slots are one-based:
+The poller writes exactly one CSV line with a trailing newline; diagnostic logging belongs to the receiver. **Current official Artisan reads columns 1–10; columns 11–16 are raw extensions, not configurable stock Program channels.** Slots are one-based:
 
 | Slot | Meaning | Format / fallback |
 | ---: | --- | --- |
