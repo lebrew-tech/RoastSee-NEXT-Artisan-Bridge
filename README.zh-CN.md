@@ -51,7 +51,21 @@ RoastSee NEXT → Artisan
 3. **配置 Artisan。** 按上面第 3 步操作，但 **External Program 选择解压目录里的 `artisan_next_poll`**，没有 `.exe` 后缀，也不要选择 `.app`。改动前先保存原有 Artisan 配置。
 4. 添加 **`+Program 34`**，开启 **LCD / Curve**，点击 **ON**。停止桥接按 **Ctrl+C**。
 
-**首次打开：** Mac 包采用临时签名，未做 Apple 公证。如果系统阻止从本仓库下载的文件，可在核对来源后前往 **系统设置 → 隐私与安全性 → 仍要打开**，然后重新打开。蓝牙权限在 **隐私与安全性 → 蓝牙** 中管理。原生构建及离线检查环境为 macOS 15；更早系统和真实蓝牙接收尚未验证。
+<a id="mac-first-launch"></a>
+
+#### 🔐 首次打开：macOS 提示安全问题
+
+当前 Mac 包采用临时签名，**尚未做 Apple 公证**。如果提示“无法验证开发者”或“Apple 无法检查是否包含恶意软件”，先确认文件从本仓库下载且未经修改，再按下面操作：
+
+1. 尝试打开 `START_HERE.command`，出现提示后关闭提示框。
+2. 打开 **系统设置 → 隐私与安全性**。
+3. 向下找到 **安全性** 区域，核对被阻止的文件，点击 **仍要打开**，再次确认 **打开**。
+4. 重新打开 `START_HERE.command`。如果随后单独提示 `RoastSeeNEXTBridge` 被阻止，再对该文件按同样步骤核对并确认。
+5. 桥接请求蓝牙权限时选择允许；之后可在 **隐私与安全性 → 蓝牙** 中查看权限。
+
+**如果没有“仍要打开”按钮，或提示“将损坏你的电脑”“检测到恶意软件”，请先停止，把完整提示或截图反馈到 [Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues)。** 不要通过关闭 macOS 安全保护来跳过这类提示。参见 [Apple 官方步骤](https://support.apple.com/zh-cn/102445)。
+
+原生构建及离线检查环境为 macOS 15；更早系统和真实蓝牙接收尚未验证。这些检查没有复现用户 Mac 上的首次打开安全弹窗。
 
 Mac 的共享状态固定保存在 `~/Library/Application Support/RoastSeeNEXT/latest.json`，不受工作目录影响。排查时可运行 `./START_HERE.command --log-level DEBUG`。离线自检需给 `--mock-live` 指定独立的 `--state` 文件，再用 `./artisan_next_poll --state` 读取同一文件。
 

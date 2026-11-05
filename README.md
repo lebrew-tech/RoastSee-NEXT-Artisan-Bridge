@@ -51,7 +51,21 @@ A standalone BLE bridge for coffee-roasting data.
 3. **Configure Artisan** as in Windows step 3, but select the extracted folder's **`artisan_next_poll`** file as External Program (no `.exe` suffix and not the `.app`). Save your current Artisan configuration first.
 4. Add **`+Program 34`**, enable **LCD / Curve**, and click **ON**. Stop the bridge with **Ctrl+C**.
 
-**First launch:** these builds are ad-hoc signed, not Apple-notarized. If macOS blocks a file you downloaded from this repository, review it in **System Settings → Privacy & Security → Open Anyway**, then open it again. Bluetooth access is managed under **Privacy & Security → Bluetooth**. macOS 15 is the native build/smoke-check environment; older macOS versions and actual BLE reception have not been validated.
+<a id="mac-first-launch"></a>
+
+#### 🔐 First launch: macOS security warning
+
+These builds are ad-hoc signed and have **not been notarized by Apple**. If macOS reports an unidentified developer or says Apple cannot check the file for malicious software, first confirm that your unchanged copy came from this repository, then:
+
+1. Try opening `START_HERE.command`, then dismiss the warning.
+2. Open **System Settings → Privacy & Security**.
+3. Scroll down to **Security**, find the blocked file and click **Open Anyway**. Confirm **Open** when asked.
+4. Open `START_HERE.command` again. If a separate warning names `RoastSeeNEXTBridge`, review that file separately using the same steps.
+5. When the bridge requests Bluetooth access, allow it. You can review the permission under **Privacy & Security → Bluetooth**.
+
+**If there is no Open Anyway button, or the warning says the software will damage your computer or that malware was detected, stop and share the exact message or a screenshot in [Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues).** Do not disable macOS security protections to work around that warning. See [Apple's official instructions](https://support.apple.com/102445).
+
+macOS 15 is the native build/smoke-check environment; older macOS versions and actual BLE reception have not been validated. These checks do not reproduce first-launch security prompts on a user's Mac.
 
 Mac state is shared at `~/Library/Application Support/RoastSeeNEXT/latest.json`, independent of the working directory. Optional diagnostic command: `./START_HERE.command --log-level DEBUG`. For an offline check, supply a separate `--state` file with `--mock-live`, then use `./artisan_next_poll --state` with the same file.
 
