@@ -19,7 +19,7 @@ BUNDLE(
     coll, name="RoastSeeNEXTBridge.app", icon=str(root / "assets/lebrew.icns"),
     bundle_identifier="com.lebrew.nextartisanbridge",
     info_plist={
-        "CFBundleShortVersionString": "0.2.0",
+        "CFBundleShortVersionString": "0.2.1",
         "NSBluetoothAlwaysUsageDescription": "Connect to RoastSee NEXT to receive roast data for Artisan.",
         "NSHighResolutionCapable": True,
     },
