@@ -331,7 +331,7 @@ The script runs the regression tests, builds both executables with a shared runt
 
 | Bridge version | Date | Changes |
 | --- | --- | --- |
-| v0.1.3 | 2026-11-05 | Moves a simple four-step guide to the top of both READMEs; detailed setup remains below. Executables are unchanged. |
+| main (not yet packaged in a public release) | 2026-11-05 | Moves a simple four-step guide to the top of both READMEs; detailed setup remains below. Executables are unchanged. |
 | v0.1.2 | 2026-11-05 | Adds bilingual data-flow and packet diagrams, plus section icons and stable navigation anchors. Executables are unchanged. |
 | v0.1.1 | 2026-11-05 | Clarifies NEXT firmware compatibility and integration background; adds LeBrew branding and Artisan links to both guides. Executables are unchanged from v0.1.0. |
 | v0.1.0 | 2026-11-05 | First public Windows portable package, bilingual setup guide, and packet reference. |
