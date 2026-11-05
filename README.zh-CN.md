@@ -1,21 +1,43 @@
-<div align="center">
+<a href="https://lebrewtech.com/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/lebrew-wordmark-dark.png">
+    <img align="right" src="assets/lebrew-wordmark.png" alt="LeBrew" width="200">
+  </picture>
+</a>
 
-# RoastSee NEXT → Artisan
+RoastSee NEXT → Artisan
+======================
 
-**轻量、可核查的烘焙数据 BLE 桥接程序。**
+独立运行的咖啡烘焙数据 BLE 桥接程序。
 
 [![English](https://img.shields.io/badge/Language-English-30363d?style=for-the-badge)](README.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
 
 ![Windows x64](https://img.shields.io/badge/Portable-Windows_x64-0078D4)
 ![Python](https://img.shields.io/badge/Source-Python_3.10%2B-3776AB)
+[![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
 
-[下载 Windows 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [快速上手](#快速上手) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
+[下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [固件兼容性](#next-固件兼容性) · [快速上手](#快速上手) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
 
-</div>
+## 简介
 
----
+本工具将 LeBrew RoastSee NEXT 接入 **[Artisan](https://artisan-scope.org/)**。Artisan 是用于记录和分析咖啡烘焙曲线的开源软件；桥接通过 BLE 接收 NEXT 数据，再交给 Artisan 的外部 **Program** 接口。Artisan 需另外安装，其[源码](https://github.com/artisan-roaster-scope/artisan)、[下载](https://artisan-scope.org/download/)和[文档](https://artisan-scope.org/docs/)由 Artisan 团队维护。
+
+**本次发布口径：NEXT 固件 1.2.0 是这份桥接说明所依据的源码协议基线。** 这不等于已完成全功能实机认证：下文的黄点通道差异尚未解决，本次也没有完成 NEXT 与 Artisan 的端到端烘焙验证。
+
+## NEXT 固件兼容性
+
+NEXT 固件版本、硬件版本和本桥接的 `v0.1.x` 软件版本是三回事。使用前请在 NEXT 的 **About / Info（关于信息）** 页面查看**内核版本（Kernel Version）**。桥接不会自动查询固件版本，也不附带固件或升级器。
+
+| NEXT 固件版本 | 本次开源桥接的适用说明 |
+| --- | --- |
+| **1.2.0** | 本文二进制布局和参数含义的参考版本。已做源码核对与离线检查；黄点第 8/9 通道不能视为已验证的真实事件标志。 |
+| **1.1.5–1.1.8** | 历史联调版本，不代表本次已逐版验证兼容。统一 `NEXT:` 命令从 1.1.5 引入；交流中提到的 1.1.8 当时是内部测试固件，本仓库不提供该固件下载。 |
+| **1.1.4 及更早版本** | 旧命令集设备不支持较新的 `NEXT:` 命令。桥接使用旧别名 `roasting` / `start` 启动，但仅凭命令可用不能保证整体兼容或字段含义一致。 |
+| 其他 / 未知版本 | 尚未评估；使用前核对版本、实际数据包布局和字段含义。 |
+
+二进制解析器能识别 `AA 55 14 ... CRC ... 53 42` 帧，并不意味着所有固件中每个字段的含义都相同。尤其是已核查 **1.2.0 的 `time_yellow` 和波动量含义与历史描述不同**，请结合下文协议和限制使用。Artisan 侧需要 Program / +Program 通道；本桥接尚未建立经过端到端测试的最低 Artisan 版本要求。
 
 ## 为什么开发这个程序
 
@@ -23,7 +45,9 @@
 
 后续与 Marko Luther 的交流进一步明确了两类问题：蓝牙连接成功不一定代表设备已开始测量；NEXT 的色值、距离和声学数据应在 **Extra Devices** 查看，ET/BT 则用于烘焙机温度。此外，不同固件接受的命令集存在差异。这些实际问题促成了明确的启动方式、可观察的连接日志和完整的参数映射说明。
 
-在这次合作中，Artisan 后来加入了 NEXT 原生支持。本项目继续作为独立的兼容、调试和协议参考工具；设备与软件版本匹配时，原生接入可能更方便。参见 [Artisan 的 LeBrew 设备说明](https://artisan-scope.org/devices/lebrew/)。本仓库由 LeBrew 维护，与 Artisan 项目独立。
+10 月，Marko 也对早期 LeBrew **网页上位机**的完成度和实机可用性提出了直率的反馈：他的 NEXT 可以建立蓝牙连接，但网页发出的页面控制命令在其设备上没有生效。后续排查确认了固件命令集的版本差异——网页按较新的 `NEXT:` 命令集开发，而他持有的设备接受旧版别名。这次反馈促使我们更明确地区分版本前提、协议支持与实机验证，并在本文说明适用边界。该反馈针对当时的网页上位机，不是对本次桥接打包版本的评测。
+
+Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容、调试和协议参考工具；设备与软件版本匹配时，原生接入可能更方便。参见 [Artisan 的 LeBrew 设备说明](https://artisan-scope.org/devices/lebrew/)。本仓库由 LeBrew 维护，与 Artisan 项目独立。
 
 ## 功能概览
 
@@ -273,3 +297,14 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 ```
 
 脚本运行回归测试、构建共享运行时的两个程序、验证 EXE 离线链路，最后在 `dist/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
+
+## 版本记录
+
+| 桥接版本 | 日期 | 变化 |
+| --- | --- | --- |
+| v0.1.1 | 2026-11-05 | 明确 NEXT 固件适用边界和联调背景；两版说明加入 LeBrew 品牌与 Artisan 链接。EXE 与 v0.1.0 相同。 |
+| v0.1.0 | 2026-11-05 | 首次公开 Windows 便携包、中英文操作说明及数据包参考。 |
+
+## 致谢
+
+感谢 Marko Luther 和 [Artisan 团队](https://github.com/artisan-roaster-scope/artisan)在接入工作、测试反馈和额外通道说明上的帮助。本文的简洁标题、发布徽章、简介和版本记录结构参考了 [Artisan 的 README](https://github.com/artisan-roaster-scope/artisan#readme)。Artisan 为独立项目，遵循其自身许可证；本仓库的 MIT 许可证适用于桥接代码。
