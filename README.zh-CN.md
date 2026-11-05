@@ -14,7 +14,7 @@ RoastSee NEXT → Artisan
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
 
 ![Windows x64](https://img.shields.io/badge/Portable-Windows_x64-0078D4)
-![macOS](https://img.shields.io/badge/Native_macOS-Apple_Silicon_%7C_Intel-555555)
+![macOS](https://img.shields.io/badge/macOS-Universal_2-555555)
 ![Python](https://img.shields.io/badge/Source-Python_3.10%2B-3776AB)
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
@@ -36,7 +36,7 @@ RoastSee NEXT → Artisan
 
 ### 🍎 Mac 同样四步
 
-1. **下载对应 ZIP**：[下载页](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)中，M 系列芯片选 `macOS-arm64`，Intel 芯片选 `macOS-x86_64`。完整解压，保留整个文件夹，不要单独移出 `.app`，无需安装 Python。
+1. **只下载一个 Mac ZIP**：[下载页](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)选择 **`RoastSeeNEXT-Artisan-macOS-universal2.zip`**，Intel 和 M 系列 Mac 都用它。完整解压，保留整个文件夹，不要单独移出 `.app`；无需安装 Python，也不用判断芯片类型。
 2. **启动桥接。** 打开 `START_HERE.command`，允许蓝牙权限，再在 NEXT 上开始实时测量。保持终端窗口打开；需要自动开始测量时，明确选择 `START_LIVE.command`。
 3. **配置 Artisan。** 按上面第 3 步操作，但 **External Program 选择解压目录里的 `artisan_next_poll`**，没有 `.exe` 后缀，也不要选择 `.app`。改动前先保存原有 Artisan 配置。
 4. 添加 **`+Program 34`**，开启 **LCD / Curve**，点击 **ON**。停止桥接按 **Ctrl+C**。
@@ -97,7 +97,7 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 | 共享 | 原子更新本地 JSON 状态文件 |
 | 输出 | 为 Artisan Program 输出一行 16 个逗号分隔的数值 |
 | 启动 | 默认只读；可显式发送 `roasting`、`start` 启动测量 |
-| 运行 | Windows x64、原生 macOS arm64 / x86_64 包，也可运行 Python 源码 |
+| 运行 | Windows x64、同时支持两种芯片的 macOS Universal 2 包，也可运行 Python 源码 |
 
 ![NEXT 经桥接、状态文件和轮询程序接入 Artisan](assets/data-flow.svg)
 
@@ -303,7 +303,7 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 - 新实时帧会替换状态，后续恢复实时数据时，摘要中的 FC/SC 可能消失。Artisan 轮询较慢时也可能错过单帧黄点脉冲。
 - 状态不包含时效、设备 ID 或 schema 校验。不要让多个接收端/设备共用一个状态路径。JSON 语法错误会返回占位值；手动写入类型错误的对象可能使轮询程序失败。
 - 重连时按名称重新扫描并选择匹配设备，没有设备地址选择器。不包含历史下载、固件烧录或完整设备控制。
-- 原生包覆盖 Windows x64 和 macOS arm64 / x86_64。Mac 构建检查不等于已验证真实蓝牙兼容性；Linux 实机行为尚未验证。
+- 原生包覆盖 Windows x64 和 macOS Universal 2。同一份 Mac ZIP 分别在 arm64 与 x86_64 环境检查，但不等于已验证真实蓝牙兼容性；Linux 实机行为尚未验证。
 
 ### 无设备离线自检
 
@@ -339,12 +339,13 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 
 脚本运行回归测试、构建共享运行时的两个程序、验证 EXE 离线链路，最后在 `dist/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
 
-在 Mac 上使用 Python 3.12，安装运行依赖及 `pyinstaller==6.22.3` 后，运行 `bash packaging/build_macos.sh`。它构建当前机器的架构，加入蓝牙权限说明，检查临时签名和隔离的模拟帧链路，并生成保留启动脚本执行权限的 Mac ZIP。GitHub Actions 分别构建 Apple Silicon、Intel 和 Windows，三项均通过后才按版本标签发布。
+在 Mac 上使用 python.org 的 Universal 2 Python 3.12 及包含双架构的运行依赖，安装 `pyinstaller==6.22.3` 后运行 `bash packaging/build_macos.sh`。脚本构建 Universal 2，加入蓝牙权限说明，检查签名、模拟帧链路及每个 Mach-O 文件的两种架构，并生成保留执行权限的 ZIP。GitHub Actions 把同一 ZIP 分别交给 Apple Silicon 和 Intel 环境解压、运行验证，通过后才与 Windows 包一起发布。
 
 ## 🗓️ 版本记录
 
 | 桥接版本 | 日期 | 变化 |
 | --- | --- | --- |
+| v0.2.2 | 2026-11-05 | Mac 改为一个 Universal 2 下载包，同一文件分别在 Intel 和 Apple Silicon 环境验收。 |
 | v0.2.1 | 2026-11-05 | 加入原生 Mac 打包、蓝牙权限说明、Mac 启动入口、固定共享状态路径和简明使用步骤。 |
 | main（尚未打包为公开发布版） | 2026-11-05 | 将四步简明教程移至两版 README 开头；完整配置保留在后文，EXE 不变。 |
 | v0.1.2 | 2026-11-05 | 加入双语数据链路图、数据包结构图、章节图标和固定导航锚点；EXE 保持不变。 |

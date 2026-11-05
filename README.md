@@ -14,7 +14,7 @@ A standalone BLE bridge for coffee-roasting data.
 [![简体中文](https://img.shields.io/badge/语言-简体中文-30363d?style=for-the-badge)](README.zh-CN.md)
 
 ![Windows x64](https://img.shields.io/badge/Portable-Windows_x64-0078D4)
-![macOS](https://img.shields.io/badge/Native_macOS-Apple_Silicon_%7C_Intel-555555)
+![macOS](https://img.shields.io/badge/macOS-Universal_2-555555)
 ![Python](https://img.shields.io/badge/Source-Python_3.10%2B-3776AB)
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
@@ -36,7 +36,7 @@ A standalone BLE bridge for coffee-roasting data.
 
 ### 🍎 Mac: four steps
 
-1. **Choose the right ZIP** from [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest): `macOS-arm64` for Apple Silicon (M-series), or `macOS-x86_64` for Intel. Extract the entire folder; do not move the `.app` out of it. No Python installation is needed.
+1. **Download one Mac ZIP** from [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest): **`RoastSeeNEXT-Artisan-macOS-universal2.zip`** runs on both Apple Silicon (M-series) and Intel. Extract the entire folder; do not move the `.app` out of it. No Python installation or chip selection is needed.
 2. **Start receiving.** Open `START_HERE.command`; allow Bluetooth access, then start live measurement on NEXT. Keep the Terminal window open. `START_LIVE.command` is the explicit automatic-measurement option.
 3. **Configure Artisan** as in Windows step 3, but select the extracted folder's **`artisan_next_poll`** file as External Program (no `.exe` suffix and not the `.app`). Save your current Artisan configuration first.
 4. Add **`+Program 34`**, enable **LCD / Curve**, and click **ON**. Stop the bridge with **Ctrl+C**.
@@ -97,7 +97,7 @@ Artisan also offers native NEXT support. This project remains a standalone compa
 | Share | Atomically replace a local JSON state file |
 | Integrate | Print one line of 16 comma-separated fields for Artisan Program |
 | Start | Read-only by default; optional `roasting` then `start` commands |
-| Run | Windows x64 or native macOS arm64 / x86_64 packages; Python source is also available |
+| Run | Windows x64 or one macOS Universal 2 package for both chip families; Python source is also available |
 
 ![NEXT → bridge → state file → poller → Artisan](assets/data-flow.svg)
 
@@ -303,7 +303,7 @@ This is a packaging release of the existing bridge behavior. In addition to the 
 - A new live sample replaces the state, so a summary's FC/SC values can disappear if live data resume. A short yellow pulse can also be missed by a slower Artisan poll interval.
 - State has no age, device ID, or schema validation. Do not mix receivers/devices on one path. Invalid JSON returns placeholders; a manually edited JSON object with wrong field types can make the poller fail.
 - Reconnection scans again and selects a matching device by name; there is no address selector. History export, firmware flashing, and full device control are outside this bridge.
-- Native packages cover Windows x64 and macOS arm64 / x86_64. Mac build checks do not establish BLE hardware compatibility; Linux hardware behavior has not been validated here.
+- Native packages cover Windows x64 and macOS Universal 2. The same Mac ZIP is checked on both arm64 and x86_64; this does not establish BLE hardware compatibility. Linux hardware behavior has not been validated here.
 
 ### Offline self-check
 
@@ -339,12 +339,13 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 
 The script runs the regression tests, builds both executables with a shared runtime, checks the frozen offline data path, and writes the ZIP under `dist/`. Dependency license notices are included in the bundle. See [LICENSE](LICENSE) for the project's MIT license.
 
-On a Mac with Python 3.12 and the runtime requirements installed, install `pyinstaller==6.22.3`, then run `bash packaging/build_macos.sh`. It builds the local machine's architecture, adds the Bluetooth permission description, checks the ad-hoc signature and isolated mock/poll data path, and creates a Mac ZIP with executable launcher permissions preserved. The GitHub Actions package workflow builds Apple Silicon, Intel, and Windows separately; a version tag publishes packages only after all three jobs pass.
+On a Mac with python.org's Universal 2 Python 3.12 and universal runtime dependencies installed, install `pyinstaller==6.22.3`, then run `bash packaging/build_macos.sh`. It builds Universal 2, adds the Bluetooth permission description, checks the signature and mock/poll data path, verifies both CPU slices in every Mach-O file, and creates a ZIP with launcher permissions preserved. The GitHub Actions workflow extracts and tests that same ZIP separately on Apple Silicon and Intel before publishing it alongside the Windows package.
 
 ## 🗓️ Version history
 
 | Bridge version | Date | Changes |
 | --- | --- | --- |
+| v0.2.2 | 2026-11-05 | One Mac Universal 2 download for Intel and Apple Silicon, with the same archive checked on both architectures. |
 | v0.2.1 | 2026-11-05 | Adds native Mac packaging, Bluetooth permission text, Mac launchers, a fixed shared state path, and simple Mac instructions. |
 | main (not yet packaged in a public release) | 2026-11-05 | Moves a simple four-step guide to the top of both READMEs; detailed setup remains below. Executables are unchanged. |
 | v0.1.2 | 2026-11-05 | Adds bilingual data-flow and packet diagrams, plus section icons and stable navigation anchors. Executables are unchanged. |

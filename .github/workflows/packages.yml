@@ -7,6 +7,21 @@ permissions:
   contents: read
 jobs:
   macos:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.4'
+      - run: python -m pip install -r requirements.txt pyinstaller==6.22.3
+      - run: bash packaging/build_macos.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-universal2
+          path: dist/RoastSeeNEXT-Artisan-macOS-*.zip
+          if-no-files-found: error
+  macos-test:
+    needs: macos
     strategy:
       fail-fast: false
       matrix:
@@ -17,13 +32,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12.4'
-      - run: python -m pip install -r requirements.txt pyinstaller==6.22.3
-      - run: bash packaging/build_macos.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: macos-${{ matrix.runner }}
-          path: dist/RoastSeeNEXT-Artisan-macOS-*.zip
-          if-no-files-found: error
+          name: macos-universal2
+          path: dist
+      - name: Test the same universal ZIP on each architecture
+        run: |
+          mkdir -p dist/check
+          ditto -x -k dist/RoastSeeNEXT-Artisan-macOS-universal2.zip dist/check
+          BUNDLE=dist/check/RoastSeeNEXT-Artisan-macOS-universal2
+          codesign --verify --deep --strict "$BUNDLE/RoastSeeNEXTBridge.app"
+          PYTHONPATH=. python packaging/verify_macos.py "$BUNDLE"
+          python packaging/verify_universal2.py "$BUNDLE/RoastSeeNEXTBridge.app"
+          uname -m
   windows:
     runs-on: windows-latest
     steps:
@@ -39,7 +60,7 @@ jobs:
           path: dist/RoastSeeNEXT-Artisan-Windows-x64.zip
           if-no-files-found: error
   publish:
-    needs: [macos, windows]
+    needs: [macos-test, windows]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:
@@ -57,4 +78,4 @@ jobs:
         run: |
           cd packages
           sha256sum *.zip > SHA256SUMS.txt
-          gh release create "$RELEASE_TAG" *.zip SHA256SUMS.txt --verify-tag --title "$RELEASE_TAG - Windows and macOS bridge" --notes "Native Windows x64, macOS Apple Silicon (arm64) and Intel (x86_64) packages. macOS builds were smoke-tested on macOS 15; no real BLE or Artisan roast was tested. Mac apps are ad-hoc signed, not Apple-notarized. Extract the full folder and follow the four-step guide in either README. Target NEXT firmware: 1.2.0; yellow/DRY limitations still apply."
+          gh release create "$RELEASE_TAG" *.zip SHA256SUMS.txt --verify-tag --title "$RELEASE_TAG - Universal Mac bridge" --notes "One macOS universal2 ZIP for both Apple Silicon and Intel. The same ZIP was extracted and smoke-tested natively on both macOS 15 architectures, and all Mach-O files were checked for arm64 and x86_64 slices. Windows x64 is also included. No real BLE or Artisan roast was tested. Mac apps are ad-hoc signed, not Apple-notarized. Extract the whole folder and open START_HERE.command. Target NEXT firmware: 1.2.0; yellow/DRY limits still apply."
