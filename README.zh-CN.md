@@ -14,6 +14,7 @@ RoastSee NEXT → Artisan
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
 
 ![Windows x64](https://img.shields.io/badge/Portable-Windows_x64-0078D4)
+![macOS](https://img.shields.io/badge/Native_macOS-Apple_Silicon_%7C_Intel-555555)
 ![Python](https://img.shields.io/badge/Source-Python_3.10%2B-3776AB)
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
@@ -32,6 +33,17 @@ RoastSee NEXT → Artisan
 4. **显示曲线。** 在 **Extra Devices** 添加 **`+Program 34`**，打开色值和声音通道的 **LCD / Curve** 开关，然后在 Artisan 点击 **ON**。
 
 **停止：** 在桥接窗口按 **Ctrl+C**。其他数据通道和自动启动测量的方式见[详细配置](#详细配置)。
+
+### 🍎 Mac 同样四步
+
+1. **下载对应 ZIP**：[下载页](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)中，M 系列芯片选 `macOS-arm64`，Intel 芯片选 `macOS-x86_64`。完整解压，保留整个文件夹，不要单独移出 `.app`，无需安装 Python。
+2. **启动桥接。** 打开 `START_HERE.command`，允许蓝牙权限，再在 NEXT 上开始实时测量。保持终端窗口打开；需要自动开始测量时，明确选择 `START_LIVE.command`。
+3. **配置 Artisan。** 按上面第 3 步操作，但 **External Program 选择解压目录里的 `artisan_next_poll`**，没有 `.exe` 后缀，也不要选择 `.app`。改动前先保存原有 Artisan 配置。
+4. 添加 **`+Program 34`**，开启 **LCD / Curve**，点击 **ON**。停止桥接按 **Ctrl+C**。
+
+**首次打开：** Mac 包采用临时签名，未做 Apple 公证。如果系统阻止从本仓库下载的文件，可在核对来源后前往 **系统设置 → 隐私与安全性 → 仍要打开**，然后重新打开。蓝牙权限在 **隐私与安全性 → 蓝牙** 中管理。原生构建及离线检查环境为 macOS 15；更早系统和真实蓝牙接收尚未验证。
+
+Mac 的共享状态固定保存在 `~/Library/Application Support/RoastSeeNEXT/latest.json`，不受工作目录影响。排查时可运行 `./START_HERE.command --log-level DEBUG`。离线自检需给 `--mock-live` 指定独立的 `--state` 文件，再用 `./artisan_next_poll --state` 读取同一文件。
 
 ## ☕ 简介
 
@@ -85,7 +97,7 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 | 共享 | 原子更新本地 JSON 状态文件 |
 | 输出 | 为 Artisan Program 输出一行 16 个逗号分隔的数值 |
 | 启动 | 默认只读；可显式发送 `roasting`、`start` 启动测量 |
-| 运行 | Windows x64 便携包，或 Python 源码 |
+| 运行 | Windows x64、原生 macOS arm64 / x86_64 包，也可运行 Python 源码 |
 
 ![NEXT 经桥接、状态文件和轮询程序接入 Artisan](assets/data-flow.svg)
 
@@ -291,7 +303,7 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 - 新实时帧会替换状态，后续恢复实时数据时，摘要中的 FC/SC 可能消失。Artisan 轮询较慢时也可能错过单帧黄点脉冲。
 - 状态不包含时效、设备 ID 或 schema 校验。不要让多个接收端/设备共用一个状态路径。JSON 语法错误会返回占位值；手动写入类型错误的对象可能使轮询程序失败。
 - 重连时按名称重新扫描并选择匹配设备，没有设备地址选择器。不包含历史下载、固件烧录或完整设备控制。
-- 便携包面向 Windows。Python 源码使用 Bleak 的平台后端，但这里尚未验证 macOS/Linux 实机行为。
+- 原生包覆盖 Windows x64 和 macOS arm64 / x86_64。Mac 构建检查不等于已验证真实蓝牙兼容性；Linux 实机行为尚未验证。
 
 ### 无设备离线自检
 
@@ -327,10 +339,13 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 
 脚本运行回归测试、构建共享运行时的两个程序、验证 EXE 离线链路，最后在 `dist/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
 
+在 Mac 上使用 Python 3.12，安装运行依赖及 `pyinstaller==6.22.3` 后，运行 `bash packaging/build_macos.sh`。它构建当前机器的架构，加入蓝牙权限说明，检查临时签名和隔离的模拟帧链路，并生成保留启动脚本执行权限的 Mac ZIP。GitHub Actions 分别构建 Apple Silicon、Intel 和 Windows，三项均通过后才按版本标签发布。
+
 ## 🗓️ 版本记录
 
 | 桥接版本 | 日期 | 变化 |
 | --- | --- | --- |
+| v0.2.0 | 2026-11-05 | 加入原生 Mac 打包、蓝牙权限说明、Mac 启动入口、固定共享状态路径和简明使用步骤。 |
 | main（尚未打包为公开发布版） | 2026-11-05 | 将四步简明教程移至两版 README 开头；完整配置保留在后文，EXE 不变。 |
 | v0.1.2 | 2026-11-05 | 加入双语数据链路图、数据包结构图、章节图标和固定导航锚点；EXE 保持不变。 |
 | v0.1.1 | 2026-11-05 | 明确 NEXT 固件适用边界和联调背景；两版说明加入 LeBrew 品牌与 Artisan 链接。EXE 与 v0.1.0 相同。 |

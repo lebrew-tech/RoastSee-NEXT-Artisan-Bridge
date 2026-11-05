@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import sys
 from pathlib import Path
 
 from .next_protocol import format_artisan_sample
@@ -11,6 +12,8 @@ from .state_store import StateStore
 
 
 def default_state_path() -> Path:
+    if sys.platform == "darwin":
+        return Path.home() / "Library" / "Application Support" / "RoastSeeNEXT" / "latest.json"
     local_app_data = os.environ.get("LOCALAPPDATA")
     if local_app_data:
         return Path(local_app_data) / "RoastSeeNEXT" / "latest.json"

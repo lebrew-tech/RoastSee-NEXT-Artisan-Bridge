@@ -14,6 +14,7 @@ A standalone BLE bridge for coffee-roasting data.
 [![简体中文](https://img.shields.io/badge/语言-简体中文-30363d?style=for-the-badge)](README.zh-CN.md)
 
 ![Windows x64](https://img.shields.io/badge/Portable-Windows_x64-0078D4)
+![macOS](https://img.shields.io/badge/Native_macOS-Apple_Silicon_%7C_Intel-555555)
 ![Python](https://img.shields.io/badge/Source-Python_3.10%2B-3776AB)
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
@@ -32,6 +33,17 @@ A standalone BLE bridge for coffee-roasting data.
 4. **Show the curves.** In **Extra Devices**, add **`+Program 34`** and enable its **LCD / Curve** switches for Agtron and acoustic activity. Click **ON** in Artisan.
 
 **Stop:** press **Ctrl+C** in the bridge window. For the remaining channels or automatic measurement startup, see [Detailed setup](#setup-details).
+
+### 🍎 Mac: four steps
+
+1. **Choose the right ZIP** from [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest): `macOS-arm64` for Apple Silicon (M-series), or `macOS-x86_64` for Intel. Extract the entire folder; do not move the `.app` out of it. No Python installation is needed.
+2. **Start receiving.** Open `START_HERE.command`; allow Bluetooth access, then start live measurement on NEXT. Keep the Terminal window open. `START_LIVE.command` is the explicit automatic-measurement option.
+3. **Configure Artisan** as in Windows step 3, but select the extracted folder's **`artisan_next_poll`** file as External Program (no `.exe` suffix and not the `.app`). Save your current Artisan configuration first.
+4. Add **`+Program 34`**, enable **LCD / Curve**, and click **ON**. Stop the bridge with **Ctrl+C**.
+
+**First launch:** these builds are ad-hoc signed, not Apple-notarized. If macOS blocks a file you downloaded from this repository, review it in **System Settings → Privacy & Security → Open Anyway**, then open it again. Bluetooth access is managed under **Privacy & Security → Bluetooth**. macOS 15 is the native build/smoke-check environment; older macOS versions and actual BLE reception have not been validated.
+
+Mac state is shared at `~/Library/Application Support/RoastSeeNEXT/latest.json`, independent of the working directory. Optional diagnostic command: `./START_HERE.command --log-level DEBUG`. For an offline check, supply a separate `--state` file with `--mock-live`, then use `./artisan_next_poll --state` with the same file.
 
 ## ☕ Summary
 
@@ -85,7 +97,7 @@ Artisan also offers native NEXT support. This project remains a standalone compa
 | Share | Atomically replace a local JSON state file |
 | Integrate | Print one line of 16 comma-separated fields for Artisan Program |
 | Start | Read-only by default; optional `roasting` then `start` commands |
-| Run | Windows x64 portable bundle, or Python source |
+| Run | Windows x64 or native macOS arm64 / x86_64 packages; Python source is also available |
 
 ![NEXT → bridge → state file → poller → Artisan](assets/data-flow.svg)
 
@@ -291,7 +303,7 @@ This is a packaging release of the existing bridge behavior. In addition to the 
 - A new live sample replaces the state, so a summary's FC/SC values can disappear if live data resume. A short yellow pulse can also be missed by a slower Artisan poll interval.
 - State has no age, device ID, or schema validation. Do not mix receivers/devices on one path. Invalid JSON returns placeholders; a manually edited JSON object with wrong field types can make the poller fail.
 - Reconnection scans again and selects a matching device by name; there is no address selector. History export, firmware flashing, and full device control are outside this bridge.
-- Windows is the packaged target. Python source uses Bleak's platform backends; macOS/Linux hardware behavior has not been validated here.
+- Native packages cover Windows x64 and macOS arm64 / x86_64. Mac build checks do not establish BLE hardware compatibility; Linux hardware behavior has not been validated here.
 
 ### Offline self-check
 
@@ -327,10 +339,13 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 
 The script runs the regression tests, builds both executables with a shared runtime, checks the frozen offline data path, and writes the ZIP under `dist/`. Dependency license notices are included in the bundle. See [LICENSE](LICENSE) for the project's MIT license.
 
+On a Mac with Python 3.12 and the runtime requirements installed, install `pyinstaller==6.22.3`, then run `bash packaging/build_macos.sh`. It builds the local machine's architecture, adds the Bluetooth permission description, checks the ad-hoc signature and isolated mock/poll data path, and creates a Mac ZIP with executable launcher permissions preserved. The GitHub Actions package workflow builds Apple Silicon, Intel, and Windows separately; a version tag publishes packages only after all three jobs pass.
+
 ## 🗓️ Version history
 
 | Bridge version | Date | Changes |
 | --- | --- | --- |
+| v0.2.0 | 2026-11-05 | Adds native Mac packaging, Bluetooth permission text, Mac launchers, a fixed shared state path, and simple Mac instructions. |
 | main (not yet packaged in a public release) | 2026-11-05 | Moves a simple four-step guide to the top of both READMEs; detailed setup remains below. Executables are unchanged. |
 | v0.1.2 | 2026-11-05 | Adds bilingual data-flow and packet diagrams, plus section icons and stable navigation anchors. Executables are unchanged. |
 | v0.1.1 | 2026-11-05 | Clarifies NEXT firmware compatibility and integration background; adds LeBrew branding and Artisan links to both guides. Executables are unchanged from v0.1.0. |
