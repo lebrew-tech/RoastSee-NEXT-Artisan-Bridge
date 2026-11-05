@@ -20,6 +20,19 @@ RoastSee NEXT → Artisan
 
 [下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [固件兼容性](#next-固件兼容性) · [快速上手](#快速上手) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
 
+<a id="快速上手"></a>
+
+## 🚀 四步开始使用
+
+**Windows x64 · 目标 NEXT 固件：1.2.0。** 旧版未确认为支持；实机验证情况与黄点限制见[版本说明](#next-固件兼容性)。
+
+1. **下载并完整解压** [Windows ZIP 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)。保留整个文件夹，不需要安装 Python。
+2. **启动桥接。** 打开电脑蓝牙，关闭连接 NEXT 的手机 App，运行 `START_HERE.cmd`；在 NEXT 上进入实时烘焙页并开始测量。保持桥接窗口打开，等日志出现 `received live sample`。
+3. **配置 Artisan。** 先保存原配置，再进入 **Config → Mode → Expert**，然后 **Config → Device → Program**；将 **External Program** 设为解压目录内 `artisan_next_poll.exe` 的完整路径。这会改变主设备选择。
+4. **显示曲线。** 在 **Extra Devices** 添加 **`+Program 34`**，打开色值和声音通道的 **LCD / Curve** 开关，然后在 Artisan 点击 **ON**。
+
+**停止：** 在桥接窗口按 **Ctrl+C**。其他数据通道和自动启动测量的方式见[详细配置](#详细配置)。
+
 ## ☕ 简介
 
 本工具将 LeBrew RoastSee NEXT 接入 **[Artisan](https://artisan-scope.org/)**。Artisan 是用于记录和分析咖啡烘焙曲线的开源软件；桥接通过 BLE 接收 NEXT 数据，再交给 Artisan 的外部 **Program** 接口。Artisan 需另外安装，其[源码](https://github.com/artisan-roaster-scope/artisan)、[下载](https://artisan-scope.org/download/)和[文档](https://artisan-scope.org/docs/)由 Artisan 团队维护。
@@ -78,9 +91,9 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 
 > **字段含义取决于固件。** 桥接支持已核查的 1.2.0 固件所用 27 字节二进制帧，以及两种兼容 ASCII 输入。部分历史字段名与当前含义不同，使用前请阅读下文“黄点”和“波动量”的说明。
 
-<a id="快速上手"></a>
+<a id="详细配置"></a>
 
-## 🚀 快速上手
+## 🧭 详细配置
 
 ### 1 · 解压和连接
 
@@ -318,6 +331,7 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 
 | 桥接版本 | 日期 | 变化 |
 | --- | --- | --- |
+| v0.1.3 | 2026-11-05 | 将四步简明教程移至两版 README 开头；完整配置保留在后文，EXE 不变。 |
 | v0.1.2 | 2026-11-05 | 加入双语数据链路图、数据包结构图、章节图标和固定导航锚点；EXE 保持不变。 |
 | v0.1.1 | 2026-11-05 | 明确 NEXT 固件适用边界和联调背景；两版说明加入 LeBrew 品牌与 Artisan 链接。EXE 与 v0.1.0 相同。 |
 | v0.1.0 | 2026-11-05 | 首次公开 Windows 便携包、中英文操作说明及数据包参考。 |

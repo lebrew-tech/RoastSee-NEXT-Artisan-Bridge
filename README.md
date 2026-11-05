@@ -20,6 +20,19 @@ A standalone BLE bridge for coffee-roasting data.
 
 [Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Firmware compatibility](#next-firmware-compatibility) · [Quick start](#quick-start) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
 
+<a id="quick-start"></a>
+
+## 🚀 Start in four steps
+
+**Windows x64 · Target NEXT firmware: 1.2.0.** Older versions are not declared supported; hardware verification and yellow-event limits are explained [here](#next-firmware-compatibility).
+
+1. **Download and extract** the [Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest). Keep the entire folder together; no Python installation is needed.
+2. **Start the bridge.** Enable Bluetooth, close phone apps connected to NEXT, and run `START_HERE.cmd`. On NEXT, enter live roasting and start measurement. Keep the bridge window open; wait for `received live sample`.
+3. **Set up Artisan.** Save your current configuration. Open **Config → Mode → Expert**, then **Config → Device → Program**. Set **External Program** to the full path of `artisan_next_poll.exe` in the extracted folder. This changes the main-device selection.
+4. **Show the curves.** In **Extra Devices**, add **`+Program 34`** and enable its **LCD / Curve** switches for Agtron and acoustic activity. Click **ON** in Artisan.
+
+**Stop:** press **Ctrl+C** in the bridge window. For the remaining channels or automatic measurement startup, see [Detailed setup](#setup-details).
+
 ## ☕ Summary
 
 This tool connects LeBrew RoastSee NEXT to **[Artisan](https://artisan-scope.org/)**, an open-source application for recording and examining coffee roast profiles. The bridge receives NEXT readings over Bluetooth LE and presents them through Artisan's external **Program** interface. Install Artisan separately; its [source code](https://github.com/artisan-roaster-scope/artisan), [downloads](https://artisan-scope.org/download/), and [documentation](https://artisan-scope.org/docs/) are maintained by the Artisan team.
@@ -78,9 +91,9 @@ Artisan also offers native NEXT support. This project remains a standalone compa
 
 > **Firmware semantics matter.** The parser accepts the 27-byte binary frame used by the inspected 1.2.0 firmware, plus two ASCII formats. Some legacy field names do not describe their current firmware meaning. In particular, read the yellow-time and variability notes below before using those channels.
 
-<a id="quick-start"></a>
+<a id="setup-details"></a>
 
-## 🚀 Quick start
+## 🧭 Detailed setup
 
 ### 1 · Extract and connect
 
@@ -318,6 +331,7 @@ The script runs the regression tests, builds both executables with a shared runt
 
 | Bridge version | Date | Changes |
 | --- | --- | --- |
+| v0.1.3 | 2026-11-05 | Moves a simple four-step guide to the top of both READMEs; detailed setup remains below. Executables are unchanged. |
 | v0.1.2 | 2026-11-05 | Adds bilingual data-flow and packet diagrams, plus section icons and stable navigation anchors. Executables are unchanged. |
 | v0.1.1 | 2026-11-05 | Clarifies NEXT firmware compatibility and integration background; adds LeBrew branding and Artisan links to both guides. Executables are unchanged from v0.1.0. |
 | v0.1.0 | 2026-11-05 | First public Windows portable package, bilingual setup guide, and packet reference. |
