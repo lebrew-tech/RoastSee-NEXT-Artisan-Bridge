@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="360" viewBox="0 0 1120 360" role="img" aria-labelledby="title desc">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#67788b"/></marker></defs>
+<style>text{font-family:Segoe UI,Arial,Microsoft YaHei,sans-serif} .title{font-size:25px;font-weight:700;fill:#162d3e}.label{font-size:17px;font-weight:600;fill:#162d3e}.small{font-size:13px;fill:#536879}.mono{font-family:Consolas,monospace;font-size:15px;fill:#162d3e}</style>
+<rect width="1120" height="360" rx="16" fill="#f5f8fb"/>
+<title id="title">27-byte NEXT binary frame / NEXT 27 字节二进制帧</title><desc id="desc">Header AA55, length 14, twenty-byte payload, little-endian CRC16 Modbus, tail 5342. CRC covers offsets 2 through 22. Firmware 1.2.0 source reference, not full hardware validation.</desc>
+<text x="32" y="44" class="title">A frame you can inspect, byte by byte.</text>
+<text x="32" y="72" class="small">27 bytes · Little-endian / 小端 · float32 IEEE 754 · NEXT 1.2.0 protocol reference / 协议参考</text>
+<g stroke="#fff" stroke-width="3"><rect x="28" y="114" width="168" height="113" rx="8" fill="#dce9f7"/><rect x="196" y="114" width="136" height="113" rx="8" fill="#eee6f8"/><rect x="332" y="114" width="424" height="113" rx="8" fill="#dceee8"/><rect x="756" y="114" width="168" height="113" rx="8" fill="#fae8c8"/><rect x="924" y="114" width="168" height="113" rx="8" fill="#dce9f7"/></g>
+<g text-anchor="middle">
+<text x="112" y="143" class="small">HEADER / 包头</text><text x="112" y="177" class="label">AA 55</text><text x="112" y="207" class="small">2 B · offset 0–1</text>
+<text x="264" y="143" class="small">LENGTH / 长度</text><text x="264" y="177" class="label">14</text><text x="264" y="207" class="small">1 B · offset 2</text>
+<text x="544" y="143" class="small">PAYLOAD / 数据体</text><text x="544" y="177" class="label">20 bytes · &lt;fBffHHBH</text><text x="544" y="207" class="small">Color · Acoustic · Rate · Variation · Distance · Time · Flag · Record</text>
+<text x="840" y="143" class="small">CRC / 校验</text><text x="840" y="177" class="label">Low → High</text><text x="840" y="207" class="small">2 B · offset 23–24</text>
+<text x="1008" y="143" class="small">TAIL / 包尾</text><text x="1008" y="177" class="label">53 42</text><text x="1008" y="207" class="small">2 B · offset 25–26</text>
+</g>
+<path d="M198 239V255H754V239" fill="none" stroke="#8c6b2f" stroke-width="2"/>
+<text x="476" y="280" text-anchor="middle" class="small">CRC-16/Modbus covers length + payload / 覆盖长度字节与数据体（offset 2–22）</text>
+<text x="32" y="326" class="small">Example CRC: 0x448F → 8F 44 on wire / 示例校验值：低字节在前。Field meanings and version limits are documented below / 字段含义见下文</text>
+</svg>

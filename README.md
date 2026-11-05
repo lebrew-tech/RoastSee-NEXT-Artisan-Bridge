@@ -20,13 +20,25 @@ A standalone BLE bridge for coffee-roasting data.
 
 [Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Firmware compatibility](#next-firmware-compatibility) · [Quick start](#quick-start) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
 
-## Summary
+## ☕ Summary
 
 This tool connects LeBrew RoastSee NEXT to **[Artisan](https://artisan-scope.org/)**, an open-source application for recording and examining coffee roast profiles. The bridge receives NEXT readings over Bluetooth LE and presents them through Artisan's external **Program** interface. Install Artisan separately; its [source code](https://github.com/artisan-roaster-scope/artisan), [downloads](https://artisan-scope.org/download/), and [documentation](https://artisan-scope.org/docs/) are maintained by the Artisan team.
 
-**Release scope:** NEXT firmware **1.2.0** is the source-inspected protocol baseline for this bridge. This is not a claim of full hardware certification: the yellow-channel mismatch below remains unresolved, and no end-to-end NEXT/Artisan roast was tested for this release.
+**Target NEXT version: firmware 1.2.0.** Supported scope is the documented 27-byte BLE live-frame format and Artisan Program data export, checked against source and offline tests. No NEXT firmware version has end-to-end hardware certification in this release. Accurate automatic yellow/DRY tagging is outside the supported scope because the yellow-channel mismatch remains unresolved. **Older firmware and unknown versions are not declared supported.**
 
-## NEXT firmware compatibility
+## 🌐 Related tools
+
+| Tool | GitHub / download | What it is for |
+| --- | --- | --- |
+| NEXT web console | [RoastSee NEXT Console](https://github.com/lebrew-tech/RoastSee-NEXT-Console) | A separate browser-based NEXT interface; firmware command compatibility must be checked independently. |
+| One-click firmware updater | [LEBREW Firmware Updater](https://github.com/lebrew-tech/LEBREW-Firmware-Updater) · [Downloads](https://github.com/lebrew-tech/LEBREW-Firmware-Updater/releases/latest) | A separate guided utility for product selection, firmware download and flashing. |
+| Artisan | [Artisan source](https://github.com/artisan-roaster-scope/artisan) · [Downloads](https://artisan-scope.org/download/) | The roast-recording application receiving this bridge's Program output. |
+
+The bridge package does not include these applications or any firmware. For the updater, select the correct NEXT model and confirm the actual firmware version offered by its published catalog; do not assume its default latest version is 1.2.0. After an update, confirm the device's Kernel Version again.
+
+<a id="next-firmware-compatibility"></a>
+
+## 🔎 NEXT firmware compatibility
 
 NEXT firmware versions, hardware revisions, and this bridge's `v0.1.x` release numbers are separate. Check the NEXT's **About / Info** page and read **Kernel Version (内核版本)** before selecting a setup. The bridge does not query firmware versions automatically and does not include a firmware image or updater.
 
@@ -39,17 +51,19 @@ NEXT firmware versions, hardware revisions, and this bridge's `v0.1.x` release n
 
 The binary parser recognizes `AA 55 14 ... CRC ... 53 42`; recognizing that envelope is not a guarantee that every firmware assigns the same meaning to each payload field. In particular, the inspected **1.2.0 `time_yellow` and variability semantics differ from legacy descriptions**. Use the packet notes and known limits below. The documented Artisan setup requires Program / +Program channels; a minimum end-to-end-tested Artisan version has not been established for this bridge release.
 
-## Why this project exists
+## 💡 Why this project exists
 
 This bridge began as a practical integration tool during LeBrew's work with the Artisan team in September 2026. The immediate goal was to make the NEXT enter live measurement, receive its BLE readings, and expose them through Artisan's existing **Program** channels, without changing or rebuilding Artisan.
 
 Subsequent integration discussions with Marko Luther clarified two distinct issues: starting a BLE connection does not always start measurement, and NEXT color/acoustic/distance data belong in **Extra Devices**, while Artisan's ET/BT channels are for roasting-machine temperatures. Firmware versions also accept different command sets. This motivated an explicit startup mode, visible connection logs, and a documented field mapping.
 
-In October, Marko also gave candid feedback on the readiness and real-device usability of an early LeBrew **web console**. His NEXT connected over BLE, but the console's page-control commands did not work on his unit. Our follow-up identified a firmware command-set mismatch: the console expected newer `NEXT:` commands, while his unit accepted the legacy aliases. This exposed a need for clearer version requirements and device-based validation, which this documentation makes explicit. That report concerned the early web console, rather than an evaluation of this packaged bridge release.
+In October, Marko described the early [NEXT web console](https://github.com/lebrew-tech/RoastSee-NEXT-Console) as **“AI slub”** (his wording), sharply questioning its readiness and real-device usability. His NEXT connected over BLE, but the console's page-control commands did not work on his unit. Our follow-up identified a firmware command-set mismatch: the console expected newer `NEXT:` commands, while his unit accepted the legacy aliases. This exposed a need for clearer version requirements and device-based validation, which this documentation makes explicit. That report concerned the early web console, rather than an evaluation of this packaged bridge release.
+
+> We took the reproducible compatibility issue seriously. Adjectives, however, are not part of the firmware command set. This release therefore makes the version assumptions, packet formats, and unverified limits explicit; the behavior is there to inspect, not to infer from a label.
 
 Artisan also offers native NEXT support. This project remains a standalone compatibility, debugging, and protocol-reference tool. Native integration may be the simpler option for a supported device/software combination; see [Artisan's LeBrew device page](https://artisan-scope.org/devices/lebrew/). This repository is maintained by LeBrew and is separate from the Artisan project.
 
-## At a glance
+## 🔗 At a glance
 
 | Capability | Behavior |
 | --- | --- |
@@ -60,17 +74,13 @@ Artisan also offers native NEXT support. This project remains a standalone compa
 | Start | Read-only by default; optional `roasting` then `start` commands |
 | Run | Windows x64 portable bundle, or Python source |
 
-```text
-RoastSee NEXT ── BLE Notify ──► RoastSeeNEXTBridge.exe
-                                     │
-                          latest.json (atomic update)
-                                     │
-Artisan Program ◄── 16 CSV fields ── artisan_next_poll.exe
-```
+![NEXT → bridge → state file → poller → Artisan](assets/data-flow.svg)
 
 > **Firmware semantics matter.** The parser accepts the 27-byte binary frame used by the inspected 1.2.0 firmware, plus two ASCII formats. Some legacy field names do not describe their current firmware meaning. In particular, read the yellow-time and variability notes below before using those channels.
 
-## Quick start
+<a id="quick-start"></a>
+
+## 🚀 Quick start
 
 ### 1 · Extract and connect
 
@@ -116,7 +126,9 @@ Add the following **Extra Devices** and enable each desired **LCD** and/or **Cur
 
 The NEXT live binary frame has no temperature. **ET and BT are `-1`**. A zero or missing temperature curve does not establish whether the NEXT data arrived; inspect its Extra Device channels and bridge logs. The 8-field ASCII extension can supply ET.
 
-## Packet reference
+<a id="packet-reference"></a>
+
+## 📡 Packet reference
 
 ### BLE transport
 
@@ -133,6 +145,8 @@ The receiver scans and establishes GATT itself; pairing in Windows Settings is n
 ### Binary live frame · 27 bytes
 
 All offsets below start at zero. Multibyte payload values and the CRC are **little-endian**. Floats are IEEE 754 binary32. The packed payload is equivalent to Python `struct` format **`<fBffHHBH`**, with no padding.
+
+![27-byte binary frame layout and CRC coverage](assets/binary-frame.svg)
 
 ```text
 AA 55 │ 14 │ 20-byte payload │ CRC low CRC high │ 53 42
@@ -213,7 +227,7 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 
 Separators/whitespace can vary because values are matched by key. The parser ignores bytes after the first NUL or `A5` padding byte. It requires the **entire summary in one notification**; split summaries are not reassembled. All four events enter JSON, but only FC/SC values are mapped to the 16 Artisan slots. Summary `Y_time` is stored as `yellow_time`, distinct from live `time_yellow`, so it does not correct Artisan slots 8/9. Reported event values are not a guarantee of automatic event detection.
 
-## Artisan output · 16 fields
+## 📊 Artisan output · 16 fields
 
 The poller writes exactly one CSV line with a trailing newline; diagnostic logging belongs to the receiver. Slots are one-based:
 
@@ -244,7 +258,9 @@ Example before receiving an event summary:
 
 Missing, unreadable, or invalid-JSON state yields sixteen `-1` placeholders. The state is stored at `%LOCALAPPDATA%\RoastSeeNEXT\latest.json` on Windows. Both programs accept `--state PATH`; use the same path for both. This file contains the latest reading, not a time series.
 
-## Diagnostics and known limits
+<a id="diagnostics-and-known-limits"></a>
+
+## 🛠️ Diagnostics and known limits
 
 | Symptom | Check |
 | --- | --- |
@@ -277,7 +293,7 @@ Remove-Item -LiteralPath $testState
 
 The output must match the example above. This writes no data to the real bridge state and needs no device.
 
-## Run from source / build
+## 🧰 Run from source / build
 
 From the repository root with Python 3.10+:
 
@@ -298,13 +314,14 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 
 The script runs the regression tests, builds both executables with a shared runtime, checks the frozen offline data path, and writes the ZIP under `dist/`. Dependency license notices are included in the bundle. See [LICENSE](LICENSE) for the project's MIT license.
 
-## Version history
+## 🗓️ Version history
 
 | Bridge version | Date | Changes |
 | --- | --- | --- |
+| v0.1.2 | 2026-11-05 | Adds bilingual data-flow and packet diagrams, plus section icons and stable navigation anchors. Executables are unchanged. |
 | v0.1.1 | 2026-11-05 | Clarifies NEXT firmware compatibility and integration background; adds LeBrew branding and Artisan links to both guides. Executables are unchanged from v0.1.0. |
 | v0.1.0 | 2026-11-05 | First public Windows portable package, bilingual setup guide, and packet reference. |
 
-## Acknowledgements
+## 🤝 Acknowledgements
 
 Thanks to Marko Luther and the [Artisan team](https://github.com/artisan-roaster-scope/artisan) for their integration work, testing feedback, and clarification of extra-channel behavior. The concise title, release badges, summary, and version-history structure of this README take inspiration from [Artisan's README](https://github.com/artisan-roaster-scope/artisan#readme). Artisan is a separate project with its own license; this bridge's MIT license applies to the bridge code.

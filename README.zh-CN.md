@@ -20,13 +20,25 @@ RoastSee NEXT → Artisan
 
 [下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [固件兼容性](#next-固件兼容性) · [快速上手](#快速上手) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
 
-## 简介
+## ☕ 简介
 
 本工具将 LeBrew RoastSee NEXT 接入 **[Artisan](https://artisan-scope.org/)**。Artisan 是用于记录和分析咖啡烘焙曲线的开源软件；桥接通过 BLE 接收 NEXT 数据，再交给 Artisan 的外部 **Program** 接口。Artisan 需另外安装，其[源码](https://github.com/artisan-roaster-scope/artisan)、[下载](https://artisan-scope.org/download/)和[文档](https://artisan-scope.org/docs/)由 Artisan 团队维护。
 
-**本次发布口径：NEXT 固件 1.2.0 是这份桥接说明所依据的源码协议基线。** 这不等于已完成全功能实机认证：下文的黄点通道差异尚未解决，本次也没有完成 NEXT 与 Artisan 的端到端烘焙验证。
+**目标适配版本：NEXT 固件 1.2.0。** 支持范围为本文所列 27 字节 BLE 实时帧格式及 Artisan Program 数据输出，依据源码核对与离线测试；本次尚无任何 NEXT 固件版本完成端到端实机认证。黄点通道差异仍未解决，准确自动标记黄点 / DRY 不在支持承诺内。**旧固件和未知版本不列为已确认支持。**
 
-## NEXT 固件兼容性
+## 🌐 相关软件与下载
+
+| 软件 | GitHub / 下载链接 | 用途 |
+| --- | --- | --- |
+| NEXT 网页上位机 | [RoastSee NEXT Console](https://github.com/lebrew-tech/RoastSee-NEXT-Console) | 独立的浏览器版 NEXT 操作界面，需另行核对固件命令兼容性。 |
+| 一键烧录程序 | [LEBREW Firmware Updater](https://github.com/lebrew-tech/LEBREW-Firmware-Updater) · [下载程序](https://github.com/lebrew-tech/LEBREW-Firmware-Updater/releases/latest) | 独立的型号选择、固件下载与烧录工具。 |
+| Artisan | [Artisan 源码](https://github.com/artisan-roaster-scope/artisan) · [下载 Artisan](https://artisan-scope.org/download/) | 接收本桥接 Program 输出的烘焙曲线记录软件。 |
+
+桥接包不附带以上软件或固件。使用烧录工具时，请选择正确的 NEXT 型号，并核对发布目录中实际提供的固件版本，不要把默认“最新版本”自动当作 1.2.0；更新后再次在设备上确认内核版本。
+
+<a id="next-固件兼容性"></a>
+
+## 🔎 NEXT 固件兼容性
 
 NEXT 固件版本、硬件版本和本桥接的 `v0.1.x` 软件版本是三回事。使用前请在 NEXT 的 **About / Info（关于信息）** 页面查看**内核版本（Kernel Version）**。桥接不会自动查询固件版本，也不附带固件或升级器。
 
@@ -39,17 +51,19 @@ NEXT 固件版本、硬件版本和本桥接的 `v0.1.x` 软件版本是三回�
 
 二进制解析器能识别 `AA 55 14 ... CRC ... 53 42` 帧，并不意味着所有固件中每个字段的含义都相同。尤其是已核查 **1.2.0 的 `time_yellow` 和波动量含义与历史描述不同**，请结合下文协议和限制使用。Artisan 侧需要 Program / +Program 通道；本桥接尚未建立经过端到端测试的最低 Artisan 版本要求。
 
-## 为什么开发这个程序
+## 💡 为什么开发这个程序
 
 这个桥接程序起源于 2026 年 9 月 LeBrew 与 Artisan 团队的接入联调。当时需要先打通 NEXT 进入实时测量、蓝牙接收和 Artisan 曲线显示这条链路，因此使用 Artisan 已有的 **Program** 通道接入，便于独立验证，无需修改或重新编译 Artisan。
 
 后续与 Marko Luther 的交流进一步明确了两类问题：蓝牙连接成功不一定代表设备已开始测量；NEXT 的色值、距离和声学数据应在 **Extra Devices** 查看，ET/BT 则用于烘焙机温度。此外，不同固件接受的命令集存在差异。这些实际问题促成了明确的启动方式、可观察的连接日志和完整的参数映射说明。
 
-10 月，Marko 也对早期 LeBrew **网页上位机**的完成度和实机可用性提出了直率的反馈：他的 NEXT 可以建立蓝牙连接，但网页发出的页面控制命令在其设备上没有生效。后续排查确认了固件命令集的版本差异——网页按较新的 `NEXT:` 命令集开发，而他持有的设备接受旧版别名。这次反馈促使我们更明确地区分版本前提、协议支持与实机验证，并在本文说明适用边界。该反馈针对当时的网页上位机，不是对本次桥接打包版本的评测。
+10 月，Marko 在邮件中用 **“AI slub”**（原文，意指“AI 泔水”）批评了早期 [NEXT 网页上位机](https://github.com/lebrew-tech/RoastSee-NEXT-Console)，直率地质疑其完成度和实机可用性：他的 NEXT 可以建立蓝牙连接，但网页发出的页面控制命令在其设备上没有生效。后续排查确认了固件命令集的版本差异——网页按较新的 `NEXT:` 命令集开发，而他持有的设备接受旧版别名。这次反馈促使我们更明确地区分版本前提、协议支持与实机验证，并在本文说明适用边界。该反馈针对当时的网页上位机，不是对本次桥接打包版本的评测。
+
+> 可复现的兼容性问题，我们认真核对；至于形容词，暂时不在固件支持的命令集中。因此，这次把版本前提、数据包格式和未验证的边界写清楚：程序表现可以检查，不必靠一个标签来推断。
 
 Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容、调试和协议参考工具；设备与软件版本匹配时，原生接入可能更方便。参见 [Artisan 的 LeBrew 设备说明](https://artisan-scope.org/devices/lebrew/)。本仓库由 LeBrew 维护，与 Artisan 项目独立。
 
-## 功能概览
+## 🔗 功能概览
 
 | 环节 | 行为 |
 | --- | --- |
@@ -60,17 +74,13 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 | 启动 | 默认只读；可显式发送 `roasting`、`start` 启动测量 |
 | 运行 | Windows x64 便携包，或 Python 源码 |
 
-```text
-RoastSee NEXT ── BLE Notify ──► RoastSeeNEXTBridge.exe
-                                     │
-                          latest.json（原子更新）
-                                     │
-Artisan Program ◄── 16 字段 CSV ── artisan_next_poll.exe
-```
+![NEXT 经桥接、状态文件和轮询程序接入 Artisan](assets/data-flow.svg)
 
 > **字段含义取决于固件。** 桥接支持已核查的 1.2.0 固件所用 27 字节二进制帧，以及两种兼容 ASCII 输入。部分历史字段名与当前含义不同，使用前请阅读下文“黄点”和“波动量”的说明。
 
-## 快速上手
+<a id="快速上手"></a>
+
+## 🚀 快速上手
 
 ### 1 · 解压和连接
 
@@ -116,7 +126,9 @@ Artisan Program ◄── 16 字段 CSV ── artisan_next_poll.exe
 
 NEXT 实时二进制没有温度字段，**ET、BT 输出为 `-1`**。温度曲线没有变化不能说明 NEXT 没有传数据，应检查 Extra Device 曲线和桥接日志。兼容的 8 字段 ASCII 扩展可以提供 ET。
 
-## 数据包参考
+<a id="数据包参考"></a>
+
+## 📡 数据包参考
 
 ### BLE 传输参数
 
@@ -133,6 +145,8 @@ NEXT 实时二进制没有温度字段，**ET、BT 输出为 `-1`**。温度曲�
 ### 二进制实时帧 · 共 27 字节
 
 以下偏移从 **0** 开始。多字节数据和 CRC 均为**小端**，浮点数为 IEEE754 binary32。数据体紧凑排列、无填充，对应 Python `struct` 格式 **`<fBffHHBH`**。
+
+![27 字节二进制帧布局及 CRC 校验范围](assets/binary-frame.svg)
 
 ```text
 AA 55 │ 14 │ 20 字节数据体 │ CRC低字节 CRC高字节 │ 53 42
@@ -213,7 +227,7 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 
 数值按键名匹配，允许分隔符和空白有所不同。首个 NUL 或 `A5` 后的填充会被忽略。**整个摘要必须在同一次 Notify 回调中完整到达**，当前没有跨通知重组摘要。四类事件都会写入 JSON，只有 FC/SC 六项进入 Artisan 的第 11–16 字段。摘要 `Y_time` 写入 `yellow_time`，与实时 `time_yellow` 是不同键，所以不会纠正第 8/9 字段。存在事件值不等于固件一定自动检测了该事件。
 
-## Artisan 输出 · 16 字段
+## 📊 Artisan 输出 · 16 字段
 
 轮询程序每次只向标准输出写一行 CSV，末尾带换行；诊断日志由桥接接收端输出。字段序号从 **1** 开始：
 
@@ -244,7 +258,9 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 
 状态文件缺失、不可读或 JSON 语法错误时，输出 16 个 `-1`。Windows 默认文件为 `%LOCALAPPDATA%\RoastSeeNEXT\latest.json`。两个程序都支持 `--state PATH`，需要指向同一个文件。文件只保存最新状态，不保存完整曲线历史。
 
-## 排查与已知限制
+<a id="排查与已知限制"></a>
+
+## 🛠️ 排查与已知限制
 
 | 现象 | 检查事项 |
 | --- | --- |
@@ -277,7 +293,7 @@ Remove-Item -LiteralPath $testState
 
 输出应与上面的 16 字段示例一致。该检查不需要设备，也不写入真实桥接状态。
 
-## 源码运行与打包
+## 🧰 源码运行与打包
 
 在仓库根目录使用 Python 3.10 或更高版本：
 
@@ -298,13 +314,14 @@ powershell -ExecutionPolicy Bypass -File packaging/build_windows.ps1
 
 脚本运行回归测试、构建共享运行时的两个程序、验证 EXE 离线链路，最后在 `dist/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
 
-## 版本记录
+## 🗓️ 版本记录
 
 | 桥接版本 | 日期 | 变化 |
 | --- | --- | --- |
+| v0.1.2 | 2026-11-05 | 加入双语数据链路图、数据包结构图、章节图标和固定导航锚点；EXE 保持不变。 |
 | v0.1.1 | 2026-11-05 | 明确 NEXT 固件适用边界和联调背景；两版说明加入 LeBrew 品牌与 Artisan 链接。EXE 与 v0.1.0 相同。 |
 | v0.1.0 | 2026-11-05 | 首次公开 Windows 便携包、中英文操作说明及数据包参考。 |
 
-## 致谢
+## 🤝 致谢
 
 感谢 Marko Luther 和 [Artisan 团队](https://github.com/artisan-roaster-scope/artisan)在接入工作、测试反馈和额外通道说明上的帮助。本文的简洁标题、发布徽章、简介和版本记录结构参考了 [Artisan 的 README](https://github.com/artisan-roaster-scope/artisan#readme)。Artisan 为独立项目，遵循其自身许可证；本仓库的 MIT 许可证适用于桥接代码。

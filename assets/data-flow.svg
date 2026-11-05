@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="360" viewBox="0 0 1120 360" role="img" aria-labelledby="title desc">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#67788b"/></marker></defs>
+<style>text{font-family:Segoe UI,Arial,Microsoft YaHei,sans-serif} .title{font-size:25px;font-weight:700;fill:#162d3e}.label{font-size:17px;font-weight:600;fill:#162d3e}.small{font-size:13px;fill:#536879}.mono{font-family:Consolas,monospace;font-size:15px;fill:#162d3e}</style>
+<rect width="1120" height="360" rx="16" fill="#f5f8fb"/>
+<title id="title">NEXT to Artisan data path / NEXT 接入 Artisan 数据链路</title><desc id="desc">BLE notifications are parsed by the bridge, stored atomically in latest.json, read by the poller, and returned as 16 CSV fields to Artisan. Conceptual diagram, not a hardware test.</desc>
+<text x="32" y="44" class="title">One device. One bridge. Your roast data.</text>
+<text x="32" y="72" class="small">NEXT → BLE receiver → local state → poller → Artisan  /  接收 → 状态共享 → 曲线采集</text>
+<g fill="#fff" stroke="#d6e1e9" stroke-width="1.5">
+<rect x="28" y="120" width="184" height="132" rx="12"/><rect x="248" y="120" width="184" height="132" rx="12"/><rect x="468" y="120" width="184" height="132" rx="12"/><rect x="688" y="120" width="184" height="132" rx="12"/><rect x="908" y="120" width="184" height="132" rx="12"/>
+</g>
+<g stroke="#67788b" stroke-width="2" marker-end="url(#arrow)"><path d="M214 186H242"/><path d="M434 186H462"/><path d="M654 186H682"/><path d="M874 186H902"/></g>
+<g text-anchor="middle">
+<text x="120" y="151" class="small">01 · DEVICE / 设备</text><text x="120" y="186" class="label">RoastSee NEXT</text><text x="120" y="220" class="small">BLE Notify · 0xBB01</text>
+<text x="340" y="151" class="small">02 · RECEIVE / 接收</text><text x="340" y="186" class="label">Bridge</text><text x="340" y="220" class="small">Parse + CRC / 解析校验</text>
+<text x="560" y="151" class="small">03 · SHARE / 共享</text><text x="560" y="186" class="label">latest.json</text><text x="560" y="220" class="small">Atomic write / 原子写入</text>
+<text x="780" y="151" class="small">04 · READ / 轮询</text><text x="780" y="186" class="label">Poller</text><text x="780" y="220" class="small">16 CSV fields / 16 字段</text>
+<text x="1000" y="151" class="small">05 · RECORD / 记录</text><text x="1000" y="186" class="label">Artisan</text><text x="1000" y="220" class="small">Program + Extra Devices</text>
+</g>
+<rect x="28" y="281" width="1064" height="48" rx="8" fill="#e7f1ee"/>
+<text x="48" y="310" class="small">Read-only by default · Auto-start is explicit · Conceptual flow, not a live test / 默认只读；自动启动需明确选择；此图为链路示意</text>
+</svg>
