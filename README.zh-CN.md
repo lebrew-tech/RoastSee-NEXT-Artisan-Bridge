@@ -13,6 +13,16 @@ RoastSee NEXT → Artisan
 [![English](https://img.shields.io/badge/Language-English-30363d?style=for-the-badge)](README.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
 
+<p align="center">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-Windows-x64.zip">
+    <img src="assets/buttons/download-windows.zh-CN.svg" alt="下载 Windows ZIP 包" width="280">
+  </a>
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-macOS-universal2.zip">
+    <img src="assets/buttons/download-macos.zh-CN.svg" alt="下载 Mac 通用 ZIP 包" width="280">
+  </a><br>
+  Windows x64 · Intel 与 M 系列 Mac 共用一个包 · 无需安装 Python
+</p>
+
 ![Windows x64](https://img.shields.io/badge/Portable-Windows_x64-0078D4)
 ![macOS](https://img.shields.io/badge/macOS-Universal_2-555555)
 ![Python](https://img.shields.io/badge/Source-Python_3.10%2B-3776AB)
@@ -352,6 +362,7 @@ packaging/
   common/                 两个平台共用的轮询入口
 assets/
   brand/                  LeBrew Logo 和程序图标
+  buttons/                中英文下载按钮
   diagrams/               数据链路图、数据包结构图
 licenses/                 第三方许可证
 .github/workflows/        原生构建及发布流程
@@ -371,7 +382,7 @@ dist/                     生成或下载的交付包，不入库
 | v0.2.3 | 2026-11-05 | 打包文件按平台、素材按用途归类，构建产物按平台存放；用户启动入口不变。 |
 | v0.2.2 | 2026-11-05 | Mac 改为一个 Universal 2 下载包，同一文件分别在 Intel 和 Apple Silicon 环境验收。 |
 | v0.2.1 | 2026-11-05 | 加入原生 Mac 打包、蓝牙权限说明、Mac 启动入口、固定共享状态路径和简明使用步骤。 |
-| main（尚未打包为公开发布版） | 2026-11-05 | 将四步简明教程移至两版 README 开头；完整配置保留在后文，EXE 不变。 |
+| main | 2026-11-05 | 两版 README 加入 Windows 和 Mac 通用版的直接下载按钮。 |
 | v0.1.2 | 2026-11-05 | 加入双语数据链路图、数据包结构图、章节图标和固定导航锚点；EXE 保持不变。 |
 | v0.1.1 | 2026-11-05 | 明确 NEXT 固件适用边界和联调背景；两版说明加入 LeBrew 品牌与 Artisan 链接。EXE 与 v0.1.0 相同。 |
 | v0.1.0 | 2026-11-05 | 首次公开 Windows 便携包、中英文操作说明及数据包参考。 |

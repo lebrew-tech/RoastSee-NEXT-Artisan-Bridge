@@ -13,6 +13,16 @@ A standalone BLE bridge for coffee-roasting data.
 [![English](https://img.shields.io/badge/Language-English-1f6feb?style=for-the-badge)](README.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-30363d?style=for-the-badge)](README.zh-CN.md)
 
+<p align="center">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-Windows-x64.zip">
+    <img src="assets/buttons/download-windows.svg" alt="Download Windows ZIP" width="280">
+  </a>
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-macOS-universal2.zip">
+    <img src="assets/buttons/download-macos.svg" alt="Download Mac Universal 2 ZIP" width="280">
+  </a><br>
+  Windows x64 · One Mac download for Intel and Apple Silicon · No Python installation needed
+</p>
+
 ![Windows x64](https://img.shields.io/badge/Portable-Windows_x64-0078D4)
 ![macOS](https://img.shields.io/badge/macOS-Universal_2-555555)
 ![Python](https://img.shields.io/badge/Source-Python_3.10%2B-3776AB)
@@ -352,6 +362,7 @@ packaging/
   common/                 Shared poller entry point
 assets/
   brand/                  LeBrew wordmarks and application icon
+  buttons/                English and Chinese download buttons
   diagrams/               Data-flow and packet illustrations
 licenses/                 Third-party license texts
 .github/workflows/        Native build and release workflow
@@ -371,7 +382,7 @@ The bilingual READMEs, project license and dependency notices remain at the repo
 | v0.2.3 | 2026-11-05 | Organizes packaging by platform and artwork by purpose, with platform-specific build output folders. User launchers are unchanged. |
 | v0.2.2 | 2026-11-05 | One Mac Universal 2 download for Intel and Apple Silicon, with the same archive checked on both architectures. |
 | v0.2.1 | 2026-11-05 | Adds native Mac packaging, Bluetooth permission text, Mac launchers, a fixed shared state path, and simple Mac instructions. |
-| main (not yet packaged in a public release) | 2026-11-05 | Moves a simple four-step guide to the top of both READMEs; detailed setup remains below. Executables are unchanged. |
+| main | 2026-11-05 | Adds direct Windows and universal Mac download buttons to both READMEs. |
 | v0.1.2 | 2026-11-05 | Adds bilingual data-flow and packet diagrams, plus section icons and stable navigation anchors. Executables are unchanged. |
 | v0.1.1 | 2026-11-05 | Clarifies NEXT firmware compatibility and integration background; adds LeBrew branding and Artisan links to both guides. Executables are unchanged from v0.1.0. |
 | v0.1.0 | 2026-11-05 | First public Windows portable package, bilingual setup guide, and packet reference. |
