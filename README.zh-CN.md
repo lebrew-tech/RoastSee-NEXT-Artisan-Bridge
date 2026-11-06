@@ -29,7 +29,7 @@ RoastSee NEXT → Artisan
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
 
-[下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan 设置](#artisan-settings) · [快速上手](#快速上手) · [固件兼容性](#next-固件兼容性) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
+[下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan 设置](#artisan-settings) · [快速上手](#快速上手) · [实测曲线](#recorded-test) · [固件兼容性](#next-固件兼容性) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
 
 <a id="artisan-settings"></a>
 
@@ -96,6 +96,18 @@ RoastSee NEXT → Artisan
 原生构建及离线检查环境为 macOS 15；更早系统和真实蓝牙接收尚未验证。这些检查没有复现用户 Mac 上的首次打开安全弹窗。
 
 Mac 的共享状态固定保存在 `~/Library/Application Support/RoastSeeNEXT/latest.json`，不受工作目录影响。排查时可运行 `./START_HERE.command --log-level DEBUG`。离线自检需给 `--mock-live` 指定独立的 `--state` 文件，再用 `./artisan_next_poll --state` 读取同一文件。
+
+<a id="recorded-test"></a>
+
+## 📈 历史实测：NEXT 第一次测试
+
+下面的图根据 **2026 年 9 月 11 日**保存的 `NEXT第一次测试.alog` 原始采样重绘。记录软件为 **Artisan 4.2.0 / Windows**，附加设备为 **Program 34 / 56 / 78 / 910**；共 **260 个采样点，间隔约 2 秒**，包含色值、变化率、历史波动字段、声学活动和距离。
+
+![2026-09-11 NEXT 实测：Agtron、变化率、历史波动字段、声学活动与距离](assets/examples/next-roast-2026-09-11.png)
+
+横轴以原记录的入豆标记为零点；竖线来自原记录保存的 **DRY 2:04、一爆开始 5:46、下豆 6:34**。曲线未额外平滑或重采样。[下载图中数值 CSV](assets/examples/next-roast-2026-09-11.csv)，包含全部采样及入豆前的数据，仅保留绘图数值。
+
+**这是历史实测记录的重绘图，不是当前版本的 Artisan 界面截图。** 当时的 NEXT 固件版本和事件标记方式未记录，不能据此认定事件由设备自动识别，也不能用历史声学、波动字段验证 1.2.0 的参数含义或当前发布包的全部功能。
 
 ## ☕ 简介
 
@@ -405,6 +417,7 @@ assets/
   brand/                  LeBrew Logo 和程序图标
   buttons/                中英文下载按钮
   diagrams/               数据链路图、数据包结构图
+  examples/               历史实测曲线及绘图数值 CSV
 licenses/                 第三方许可证
 .github/workflows/        原生构建及发布流程
 build/                    临时构建文件，不入库

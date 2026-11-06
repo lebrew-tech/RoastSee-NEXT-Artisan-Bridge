@@ -29,7 +29,7 @@ A standalone BLE bridge for coffee-roasting data.
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
 
-[Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan settings](#artisan-settings) · [Quick start](#quick-start) · [Firmware compatibility](#next-firmware-compatibility) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
+[Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan settings](#artisan-settings) · [Quick start](#quick-start) · [Recorded test](#recorded-test) · [Firmware compatibility](#next-firmware-compatibility) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
 
 <a id="artisan-settings"></a>
 
@@ -96,6 +96,18 @@ These builds are ad-hoc signed and have **not been notarized by Apple**. If macO
 macOS 15 is the native build/smoke-check environment; older macOS versions and actual BLE reception have not been validated. These checks do not reproduce first-launch security prompts on a user's Mac.
 
 Mac state is shared at `~/Library/Application Support/RoastSeeNEXT/latest.json`, independent of the working directory. Optional diagnostic command: `./START_HERE.command --log-level DEBUG`. For an offline check, supply a separate `--state` file with `--mock-live`, then use `./artisan_next_poll --state` with the same file.
+
+<a id="recorded-test"></a>
+
+## 📈 Recorded hardware test: the first NEXT session
+
+This chart is replotted from the original samples in `NEXT第一次测试.alog`, recorded on **11 September 2026** with **Artisan 4.2.0 / Windows**. The profile used **Program 34 / 56 / 78 / 910** extra devices and contains **260 samples, approximately two seconds apart**, covering Agtron, rate, the legacy variability field, acoustic activity, and distance.
+
+![2026-09-11 NEXT recording: Agtron, rate, legacy variability, acoustic activity and distance](assets/examples/next-roast-2026-09-11.png)
+
+Time is relative to the profile's recorded CHARGE marker. Vertical lines show its saved **DRY at 2:04, first-crack start at 5:46, and DROP at 6:34**. No additional smoothing or resampling was applied. [Download the plotted values as CSV](assets/examples/next-roast-2026-09-11.csv), including all samples and pre-charge readings, with only numeric chart data retained.
+
+**This is a replot of a historical hardware recording, not a screenshot of the current Artisan interface.** The NEXT firmware version and how the event markers were entered were not recorded. The markers do not establish automatic event detection; historical acoustic and variability fields do not validate firmware 1.2.0 semantics or every feature of the current release.
 
 ## ☕ Summary
 
@@ -405,6 +417,7 @@ assets/
   brand/                  LeBrew wordmarks and application icon
   buttons/                English and Chinese download buttons
   diagrams/               Data-flow and packet illustrations
+  examples/               Historical hardware chart and numeric CSV
 licenses/                 Third-party license texts
 .github/workflows/        Native build and release workflow
 build/                    Temporary build files (not committed)
