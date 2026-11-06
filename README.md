@@ -29,7 +29,35 @@ A standalone BLE bridge for coffee-roasting data.
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
 
-[Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Firmware compatibility](#next-firmware-compatibility) · [Quick start](#quick-start) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
+[Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan settings](#artisan-settings) · [Quick start](#quick-start) · [Firmware compatibility](#next-firmware-compatibility) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
+
+<a id="artisan-settings"></a>
+
+## ⚙️ Start here: Artisan settings
+
+**Use the same Artisan settings on Windows and Mac. Add two extra-device groups: `Program 34` and `Program 56`, giving four readings in total. Add `Program 78` if you also need distance.** Each Program group contains two channels; the setup is not limited to two readings.
+
+1. **Save your configuration:** choose **Help → Save Settings** in Artisan. This setup changes the main input to **Prog**; an existing roaster temperature connection needs separate configuration.
+2. **Enable expert mode:** open **Config → Mode → Expert**, then **Config → Device** and select **Prog** as the input.
+3. **Select the poller:** use the upper **Select** button in **External Program** and choose the file below from the extracted folder. **Leave the lower Output checkbox unchecked.** Do not select the receiver or a startup script.
+
+| System | File to select as External Program |
+| --- | --- |
+| Windows | `artisan_next_poll.exe` |
+| Mac (Intel / Apple Silicon) | `artisan_next_poll` (no suffix; not the `.app`) |
+
+4. **Add channels:** add the groups below in **Extra Devices**. Enable **LCD** for numeric readings and **Curve** for plots on each channel you want to see. The dropdown displays names such as `Program 34`, without a leading `+`.
+
+| Extra-device group | First channel | Second channel | Recommendation |
+| --- | --- | --- | --- |
+| `Program 34` | Agtron | Acoustic activity (`voice`) | Add |
+| `Program 56` | Agtron rate | Agtron variability | Add |
+| `Program 78` | Distance | Bridge-latched time, not a validated yellow time | Add for distance |
+| `Program 910` | Bridge-generated flag, not validated for automatic DRY | Unused | Leave out for now |
+
+5. **Monitor and record:** keep the bridge window open, start live measurement on NEXT, and wait for `received live sample`. In Artisan, click **ON** to monitor, then **START** to record. Press **Ctrl+C** to exit the bridge; stop measurement on the NEXT itself.
+
+**What should you see?** Check the extra channels for Agtron and acoustic readings. Binary live frames contain no temperature, so **ET / BT values of `-1` are expected**. The stock Program interface reads only the first **10 columns** and has no `Program 1112 / 1314 / 1516` devices. This setup cannot directly display the FC/SC extension fields or provide reliable automatic yellow tagging. See the [official External Programs help](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py).
 
 <a id="quick-start"></a>
 
@@ -40,7 +68,7 @@ A standalone BLE bridge for coffee-roasting data.
 1. **Download and extract** the [Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest). Keep the entire folder together; no Python installation is needed.
 2. **Start the bridge.** Enable Bluetooth, close phone apps connected to NEXT, and run `START_HERE.cmd`. On NEXT, enter live roasting and start measurement. Keep the bridge window open; wait for `received live sample`.
 3. **Set up Artisan.** Save your current configuration with **Help → Save Settings**. Open **Config → Mode → Expert**, then **Config → Device** and select **Prog** as the input. In **External Program**, use the upper **Select** button to choose `artisan_next_poll.exe`. Leave **Output** unchecked. This changes the main-device selection.
-4. **Show the curves.** In **Extra Devices**, add **`Program 34`** and enable its **LCD / Curve** switches for Agtron and acoustic activity. Click **ON** to monitor; click **START** when you want to record.
+4. **Show the curves.** Follow the [Artisan settings above](#artisan-settings): add **`Program 34` and `Program 56`** and enable **LCD / Curve** for the channels you want. Click **ON** to monitor; click **START** when you want to record.
 
 **Stop:** press **Ctrl+C** in the bridge window. For the remaining channels or automatic measurement startup, see [Detailed setup](#setup-details).
 
@@ -49,7 +77,7 @@ A standalone BLE bridge for coffee-roasting data.
 1. **Download one Mac ZIP** from [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest): **`RoastSeeNEXT-Artisan-macOS-universal2.zip`** runs on both Apple Silicon (M-series) and Intel. Extract the entire folder; do not move the `.app` out of it. No Python installation or chip selection is needed.
 2. **Start receiving.** Open `START_HERE.command`; allow Bluetooth access, then start live measurement on NEXT. Keep the Terminal window open. `START_LIVE.command` is the explicit automatic-measurement option.
 3. **Configure Artisan** as in Windows step 3, but select the extracted folder's **`artisan_next_poll`** file as External Program (no `.exe` suffix and not the `.app`). Save your current Artisan configuration first.
-4. Add **`Program 34`**, enable **LCD / Curve**, and click **ON** to monitor or **START** to record. Stop the bridge with **Ctrl+C**.
+4. Follow the [Artisan settings above](#artisan-settings): add **`Program 34` and `Program 56`**, enable **LCD / Curve**, and click **ON** to monitor or **START** to record. Stop the bridge with **Ctrl+C**.
 
 <a id="mac-first-launch"></a>
 
@@ -170,7 +198,7 @@ Add the following **Extra Devices** and enable each desired **LCD** and/or **Cur
 | `Program 78` | Distance | Bridge-latched time (not a validated yellow time) |
 | `Program 910` | Bridge-generated flag (not validated for DRY) | Unused |
 
-Start with **Program 34**, optionally adding **Program 56**. Artisan removes the leading `+` from extra-device names in the dropdown. The current official Program interface reads only the first **10 values**, and does not provide Program 1112 / 1314 / 1516 devices. The bridge's FC/SC values in raw columns 11–16 therefore do not appear through this setup. See the [official External Programs help](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py).
+Add **Program 34 + Program 56**, and optionally **Program 78** for distance; the full walkthrough is in [Artisan settings above](#artisan-settings). Artisan removes the leading `+` from extra-device names in the dropdown. The current official Program interface reads only the first **10 values**, and does not provide Program 1112 / 1314 / 1516 devices. The bridge's FC/SC values in raw columns 11–16 therefore do not appear through this setup. See the [official External Programs help](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py).
 
 The NEXT live binary frame has no temperature. **ET and BT are `-1`**. A zero or missing temperature curve does not establish whether the NEXT data arrived; inspect its Extra Device channels and bridge logs. The 8-field ASCII extension can supply ET.
 

@@ -29,7 +29,35 @@ RoastSee NEXT → Artisan
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
 
-[下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [固件兼容性](#next-固件兼容性) · [快速上手](#快速上手) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
+[下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan 设置](#artisan-settings) · [快速上手](#快速上手) · [固件兼容性](#next-固件兼容性) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
+
+<a id="artisan-settings"></a>
+
+## ⚙️ 先看这里：Artisan 怎么设置
+
+**Windows 和 Mac 使用同一套 Artisan 设置。推荐添加两个附加设备组：`Program 34` 和 `Program 56`，共四路数据；需要距离时再加 `Program 78`。** 每个 Program 组包含两路，并不是只能读取两个数据。
+
+1. **保存原配置：** 在 Artisan 中点击 **Help → Save Settings**。本接法会把主输入改为 **Prog**，原有烘焙机温度连接需另行配置。
+2. **进入专家模式：** 点击 **Config → Mode → Expert**，再打开 **Config → Device**，将输入方式选为 **Prog**。
+3. **选择采样程序：** 在 **External Program** 上排点击 **Select**，按下表选择解压目录里的文件。**下排 Output 不勾选**，不要选接收程序或启动脚本。
+
+| 系统 | External Program 选择的文件 |
+| --- | --- |
+| Windows | `artisan_next_poll.exe` |
+| Mac（Intel / M 系列） | `artisan_next_poll`（无后缀，不是 `.app`） |
+
+4. **添加通道：** 在 **Extra Devices** 添加下表中的组，给需要显示的每路开启 **LCD**（数值）和 **Curve**（曲线）。设备下拉框显示的是 `Program 34` 等名称，不带前面的 `+`。
+
+| 附加设备组 | 第一路 | 第二路 | 建议 |
+| --- | --- | --- | --- |
+| `Program 34` | Agtron 色值 | 声学活动指标 `voice` | 添加 |
+| `Program 56` | 色值变化率 | 色值波动量 | 添加 |
+| `Program 78` | 距离 | 桥接锁存时间，不能当作真实黄点时间 | 需要距离时添加 |
+| `Program 910` | 桥接生成标志，不能用于自动 DRY | 未使用 | 暂不添加 |
+
+5. **开始查看和记录：** 保持桥接窗口打开，在 NEXT 上开始实时测量，等日志出现 `received live sample`；回到 Artisan，点击 **ON** 查看数据，再点击 **START** 开始记录。桥接按 **Ctrl+C** 退出；设备测量需在 NEXT 上停止。
+
+**怎么看是否成功？** 检查附加通道的色值、声音等读数。二进制实时包没有温度，主 **ET / BT 为 `-1` 是预期行为**。当前官方 Program 接口只读取前 **10 列**，没有 `Program 1112 / 1314 / 1516`，这套配置不直接显示一爆、二爆扩展数据，也不支持可靠的自动黄点标记。详见[官方 External Programs 帮助](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py)。
 
 <a id="快速上手"></a>
 
@@ -40,7 +68,7 @@ RoastSee NEXT → Artisan
 1. **下载并完整解压** [Windows ZIP 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)。保留整个文件夹，不需要安装 Python。
 2. **启动桥接。** 打开电脑蓝牙，关闭连接 NEXT 的手机 App，运行 `START_HERE.cmd`；在 NEXT 上进入实时烘焙页并开始测量。保持桥接窗口打开，等日志出现 `received live sample`。
 3. **配置 Artisan。** 先用 **Help → Save Settings** 保存原配置，再进入 **Config → Mode → Expert**，然后 **Config → Device**，输入方式选择 **Prog**。在 **External Program** 上排点击 **Select**，选择解压目录内的 `artisan_next_poll.exe`；**Output 不勾选**。这会改变主设备选择。
-4. **显示曲线。** 在 **Extra Devices** 添加 **`Program 34`**，打开色值和声音通道的 **LCD / Curve**。点击 **ON** 查看数据，需要记录曲线时再点击 **START**。
+4. **显示曲线。** 按[开头的 Artisan 设置](#artisan-settings)添加 **`Program 34` 和 `Program 56`**，开启所需通道的 **LCD / Curve**。点击 **ON** 查看数据，需要记录曲线时再点击 **START**。
 
 **停止：** 在桥接窗口按 **Ctrl+C**。其他数据通道和自动启动测量的方式见[详细配置](#详细配置)。
 
@@ -49,7 +77,7 @@ RoastSee NEXT → Artisan
 1. **只下载一个 Mac ZIP**：[下载页](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)选择 **`RoastSeeNEXT-Artisan-macOS-universal2.zip`**，Intel 和 M 系列 Mac 都用它。完整解压，保留整个文件夹，不要单独移出 `.app`；无需安装 Python，也不用判断芯片类型。
 2. **启动桥接。** 打开 `START_HERE.command`，允许蓝牙权限，再在 NEXT 上开始实时测量。保持终端窗口打开；需要自动开始测量时，明确选择 `START_LIVE.command`。
 3. **配置 Artisan。** 按上面第 3 步操作，但 **External Program 选择解压目录里的 `artisan_next_poll`**，没有 `.exe` 后缀，也不要选择 `.app`。改动前先保存原有 Artisan 配置。
-4. 添加 **`Program 34`**，开启 **LCD / Curve**，点击 **ON** 查看数据，点击 **START** 开始记录。停止桥接按 **Ctrl+C**。
+4. 按[开头的 Artisan 设置](#artisan-settings)添加 **`Program 34` 和 `Program 56`**，开启 **LCD / Curve**，点击 **ON** 查看数据，点击 **START** 开始记录。停止桥接按 **Ctrl+C**。
 
 <a id="mac-first-launch"></a>
 
@@ -170,7 +198,7 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 | `Program 78` | 距离 | 桥接锁存时间，不代表已验证的黄点时间 |
 | `Program 910` | 桥接生成标志，不能直接用于自动 DRY | 未使用 |
 
-建议先只配 **Program 34**，需要时再加 **Program 56**。Artisan 的附加设备下拉框会去掉名称前的 `+`。当前官方 Program 接口只读取前 **10 个字段**，没有 Program 1112 / 1314 / 1516 设备；桥接原始输出第 11–16 列的一爆、二爆数据，不能通过这套官方界面直接显示。参见 [官方 External Programs 帮助](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py)。
+推荐添加 **Program 34 + Program 56**，需要距离时再加 **Program 78**；完整操作见[开头的 Artisan 设置](#artisan-settings)。Artisan 的附加设备下拉框会去掉名称前的 `+`。当前官方 Program 接口只读取前 **10 个字段**，没有 Program 1112 / 1314 / 1516 设备；桥接原始输出第 11–16 列的一爆、二爆数据，不能通过这套官方界面直接显示。参见 [官方 External Programs 帮助](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py)。
 
 NEXT 实时二进制没有温度字段，**ET、BT 输出为 `-1`**。温度曲线没有变化不能说明 NEXT 没有传数据，应检查 Extra Device 曲线和桥接日志。兼容的 8 字段 ASCII 扩展可以提供 ET。
 
