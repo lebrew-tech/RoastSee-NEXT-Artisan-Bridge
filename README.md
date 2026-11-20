@@ -10,14 +10,18 @@ RoastSee NEXT → Artisan
 
 A standalone BLE bridge for coffee-roasting data.
 
+> **Why a standalone bridge?** Under LeBrew’s current support arrangement, the Artisan team will no longer handle fixes for RoastSee NEXT-specific integration issues. LeBrew handles ongoing support through this bridge. Please report Bluetooth, sampling, and device compatibility issues in [this repository’s Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues).
+
+> **Target NEXT firmware is 1.2.0.** Check **Kernel Version** under **About / Info** on your NEXT. The 1.2.0 BLE live-data format was checked against source and tested offline. Other firmware versions, including 1.2.1–1.2.4, have no hardware validation record for this bridge. See [firmware compatibility](#next-firmware-compatibility).
+
 [![English](https://img.shields.io/badge/Language-English-1f6feb?style=for-the-badge)](README.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-30363d?style=for-the-badge)](README.zh-CN.md)
 
 <p align="center">
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-Windows-x64.zip">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip">
     <img src="assets/buttons/download-windows.svg" alt="Download Windows ZIP" width="280">
   </a>
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-macOS-universal2.zip">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip">
     <img src="assets/buttons/download-macos.svg" alt="Download Mac Universal 2 ZIP" width="280">
   </a><br>
   Windows x64 · One Mac download for Intel and Apple Silicon · No Python installation needed
@@ -31,9 +35,32 @@ A standalone BLE bridge for coffee-roasting data.
 
 [Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan settings](#artisan-settings) · [Quick start](#quick-start) · [Recorded test](#recorded-test) · [Firmware compatibility](#next-firmware-compatibility) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
 
+<a id="quick-start"></a>
+
+## macOS quick start
+
+1. [Download the Mac desktop ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip) and install [Artisan](https://artisan-scope.org/download/) separately. Extract the entire `RoastSeeNEXT-Artisan-macOS-universal2.zip` desktop bundle and double-click **`RoastSeeNEXTBridge.app`**. The same ZIP runs on Apple Silicon and Intel and includes its Python runtime.
+2. Save your work and quit Artisan. In the bridge, select **Set up and open Artisan** and confirm the main ET/BT input change. The bridge backs up the affected settings, switches the input to **Prog**, sets the bundled poller and its desktop state path, turns off **Output**, and enables LCDs and curves for **Program 34** and **Program 56**. Other extra devices and custom labels are preserved.
+3. Disconnect any phone app from NEXT. Select **Connect NEXT**, allow Bluetooth access when asked, and start live measurement on NEXT. To have the bridge start measurement for you, check **Start measurement on connection** before connecting. Receiving is the default.
+4. When Agtron, voice, rate and variation appear in the bridge, select **ON** in Artisan to monitor and **START** to record. Use **Disconnect** or close the bridge when finished.
+
+To recover the previous Artisan input and channel settings, quit Artisan and select **Restore settings**. Run setup again after moving the app to update the absolute poller path. The language picker in the top-right applies English or Simplified Chinese immediately and remembers your choice.
+
+If NEXT refuses automatic start, select **Start** on its live-roasting screen. If the readings appear but the curves are out of view, adjust the vertical range under **Config → Axes** in Artisan.
+
+### Command-line use
+
+The same folder includes `START_HERE.command` for receive-only mode, `START_LIVE.command` for automatic measurement, and `artisan_next_poll` for [manual Artisan setup](#artisan-settings). The desktop receiver writes `~/Library/Application Support/RoastSeeNEXT/desktop-latest.json` and the command-line receiver writes `~/Library/Application Support/RoastSeeNEXT/latest.json`. Use `./START_HERE.command --log-level DEBUG` to troubleshoot or pass `--mock-live --state FILE` for an offline test. Read the same file with `./artisan_next_poll --state FILE`.
+
+<a id="mac-first-launch"></a>
+
+### First launch on macOS
+
+The desktop package is ad-hoc signed and has no Apple notarization. If macOS blocks the app at first launch and you trust the source and integrity of this copy, follow [Apple’s Open Anyway instructions](https://support.apple.com/102445) for the app. Bluetooth access is requested when you connect. You can review access in **System Settings → Privacy & Security → Bluetooth**.
+
 <a id="artisan-settings"></a>
 
-## ⚙️ Start here: Artisan settings
+## Manual Artisan setup
 
 **Use the same Artisan settings on Windows and Mac. Add two extra-device groups: `Program 34` and `Program 56`, giving four readings in total. Add `Program 78` if you also need distance.** Each Program group contains two channels; the setup is not limited to two readings.
 
@@ -59,43 +86,16 @@ A standalone BLE bridge for coffee-roasting data.
 
 **What should you see?** Check the extra channels for Agtron and acoustic readings. Binary live frames contain no temperature, so **ET / BT values of `-1` are expected**. The stock Program interface reads only the first **10 columns** and has no `Program 1112 / 1314 / 1516` devices. This setup cannot directly display the FC/SC extension fields or provide reliable automatic yellow tagging. See the [official External Programs help](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py).
 
-<a id="quick-start"></a>
-
-## 🚀 Start in four steps
+## Windows x64 quick start
 
 **Windows x64 · Target NEXT firmware: 1.2.0.** Older versions are not declared supported; hardware verification and yellow-event limits are explained [here](#next-firmware-compatibility).
 
-1. **Download and extract** the [Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest). Keep the entire folder together; no Python installation is needed.
+1. **Download and extract** the [Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip). Keep the entire folder together; no Python installation is needed.
 2. **Start the bridge.** Enable Bluetooth, close phone apps connected to NEXT, and run `START_HERE.cmd`. On NEXT, enter live roasting and start measurement. Keep the bridge window open; wait for `received live sample`.
 3. **Set up Artisan.** Save your current configuration with **Help → Save Settings**. Open **Config → Mode → Expert**, then **Config → Device** and select **Prog** as the input. In **External Program**, use the upper **Select** button to choose `artisan_next_poll.exe`. Leave **Output** unchecked. This changes the main-device selection.
 4. **Show the curves.** Follow the [Artisan settings above](#artisan-settings): add **`Program 34` and `Program 56`** and enable **LCD / Curve** for the channels you want. Click **ON** to monitor; click **START** when you want to record.
 
 **Stop:** press **Ctrl+C** in the bridge window. For the remaining channels or automatic measurement startup, see [Detailed setup](#setup-details).
-
-### 🍎 Mac: four steps
-
-1. **Download one Mac ZIP** from [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest): **`RoastSeeNEXT-Artisan-macOS-universal2.zip`** runs on both Apple Silicon (M-series) and Intel. Extract the entire folder; do not move the `.app` out of it. No Python installation or chip selection is needed.
-2. **Start receiving.** Open `START_HERE.command`; allow Bluetooth access, then start live measurement on NEXT. Keep the Terminal window open. `START_LIVE.command` is the explicit automatic-measurement option.
-3. **Configure Artisan** as in Windows step 3, but select the extracted folder's **`artisan_next_poll`** file as External Program (no `.exe` suffix and not the `.app`). Save your current Artisan configuration first.
-4. Follow the [Artisan settings above](#artisan-settings): add **`Program 34` and `Program 56`**, enable **LCD / Curve**, and click **ON** to monitor or **START** to record. Stop the bridge with **Ctrl+C**.
-
-<a id="mac-first-launch"></a>
-
-#### 🔐 First launch: macOS security warning
-
-These builds are ad-hoc signed and have **not been notarized by Apple**. If macOS reports an unidentified developer or says Apple cannot check the file for malicious software, first confirm that your unchanged copy came from this repository, then:
-
-1. Try opening `START_HERE.command`, then dismiss the warning.
-2. Open **System Settings → Privacy & Security**.
-3. Scroll down to **Security**, find the blocked file and click **Open Anyway**. Confirm **Open** when asked.
-4. Open `START_HERE.command` again. If a separate warning names `RoastSeeNEXTBridge`, review that file separately using the same steps.
-5. When the bridge requests Bluetooth access, allow it. You can review the permission under **Privacy & Security → Bluetooth**.
-
-**If there is no Open Anyway button, or the warning says the software will damage your computer or that malware was detected, stop and share the exact message or a screenshot in [Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues).** Do not disable macOS security protections to work around that warning. See [Apple's official instructions](https://support.apple.com/102445).
-
-macOS 15 is the native build/smoke-check environment; older macOS versions and actual BLE reception have not been validated. These checks do not reproduce first-launch security prompts on a user's Mac.
-
-Mac state is shared at `~/Library/Application Support/RoastSeeNEXT/latest.json`, independent of the working directory. Optional diagnostic command: `./START_HERE.command --log-level DEBUG`. For an offline check, supply a separate `--state` file with `--mock-live`, then use `./artisan_next_poll --state` with the same file.
 
 <a id="recorded-test"></a>
 
@@ -129,11 +129,12 @@ The bridge package does not include these applications or any firmware. For the 
 
 ## 🔎 NEXT firmware compatibility
 
-NEXT firmware versions, hardware revisions, and this bridge's `v0.1.x` release numbers are separate. Check the NEXT's **About / Info** page and read **Kernel Version (内核版本)** before selecting a setup. The bridge does not query firmware versions automatically and does not include a firmware image or updater.
+NEXT firmware versions, hardware revisions, and bridge release numbers are separate. Check the NEXT's **About / Info** page and read **Kernel Version (内核版本)** before selecting a setup. The bridge does not query firmware versions automatically and does not include a firmware image or updater.
 
 | NEXT firmware | Status for this open-source bridge |
 | --- | --- |
 | **1.2.0** | Reference version for the binary layout and parameter meanings documented here. Source inspection and offline checks only; yellow slots 8/9 are not validated true event markers. |
+| **1.2.1–1.2.4** | Later firmware builds. This bridge has no end-to-end validation for these versions. |
 | **1.1.5–1.1.8** | Historical integration versions; not an independently verified compatibility range for this release. The unified `NEXT:` commands were introduced in 1.1.5. The 1.1.8 build discussed during integration was an internal test build, not a firmware download supplied here. |
 | **1.1.4 and earlier** | Legacy devices. The older command set does not support the newer `NEXT:` commands. The bridge uses the legacy `roasting` / `start` startup aliases, but that alone does not establish full compatibility or identical field meanings. |
 | Other / unknown | Not assessed; check firmware, incoming packet layout, and field semantics before relying on the data. |
@@ -146,9 +147,7 @@ This bridge began as a practical integration tool during LeBrew's work with the 
 
 Subsequent integration discussions with Marko Luther clarified two distinct issues: starting a BLE connection does not always start measurement, and NEXT color/acoustic/distance data belong in **Extra Devices**, while Artisan's ET/BT channels are for roasting-machine temperatures. Firmware versions also accept different command sets. This motivated an explicit startup mode, visible connection logs, and a documented field mapping.
 
-In October, Marko described the early [NEXT web console](https://github.com/lebrew-tech/RoastSee-NEXT-Console) as **“AI slub”** (his wording), sharply questioning its readiness and real-device usability. His NEXT connected over BLE, but the console's page-control commands did not work on his unit. Our follow-up identified a firmware command-set mismatch: the console expected newer `NEXT:` commands, while his unit accepted the legacy aliases. This exposed a need for clearer version requirements and device-based validation, which this documentation makes explicit. That report concerned the early web console, rather than an evaluation of this packaged bridge release.
-
-> We took the reproducible compatibility issue seriously. Adjectives, however, are not part of the firmware command set. This release therefore makes the version assumptions, packet formats, and unverified limits explicit; the behavior is there to inspect, not to infer from a label.
+Early integration testing found that firmware versions accept different page-control commands. Use the compatibility table here to check your firmware and the field mapping.
 
 Artisan also offers native NEXT support. This project remains a standalone compatibility, debugging, and protocol-reference tool. Native integration may be the simpler option for a supported device/software combination; see [Artisan's LeBrew device page](https://artisan-scope.org/devices/lebrew/). This repository is maintained by LeBrew and is separate from the Artisan project.
 
@@ -360,13 +359,13 @@ Missing, unreadable, or invalid-JSON state yields sixteen `-1` placeholders. The
 
 Run `RoastSeeNEXTBridge.exe --log-level DEBUG` to inspect actual notification hex. Avoid guessing the protocol from a connection-success message alone.
 
-This is a packaging release of the existing bridge behavior. In addition to the yellow mismatch and split-summary limit described above:
+The following limits apply to the documented bridge protocol and sampling path.
 
 - Offline checks cover parsing, storage, poller output and frozen Windows backend imports. Actual BLE reception and an Artisan roasting session have **not** been verified for this release.
 - A new live sample replaces the state, so a summary's FC/SC values can disappear if live data resume. A short yellow pulse can also be missed by a slower Artisan poll interval.
 - State has no age, device ID, or schema validation. Do not mix receivers/devices on one path. Invalid JSON returns placeholders; a manually edited JSON object with wrong field types can make the poller fail.
 - Reconnection scans again and selects a matching device by name; there is no address selector. History export, firmware flashing, and full device control are outside this bridge.
-- Native packages cover Windows x64 and macOS Universal 2. The same Mac ZIP is checked on both arm64 and x86_64; this does not establish BLE hardware compatibility. Linux hardware behavior has not been validated here.
+- Native packages cover Windows x64 and macOS Universal 2. The Mac desktop package contains arm64 and x86_64 slices. Linux hardware behavior has not been validated here.
 
 ### Offline self-check
 
@@ -382,6 +381,8 @@ Remove-Item -LiteralPath $testState
 The output must match the example above. This writes no data to the real bridge state and needs no device.
 
 ## 🧰 Run from source / build
+
+> **Build provenance.** The repository scripts below build the command-line package. The macOS desktop download on the release page comes from a separate Mac build.
 
 From the repository root with Python 3.10+:
 
@@ -433,6 +434,7 @@ The bilingual READMEs, project license and dependency notices remain at the repo
 
 | Bridge version | Date | Changes |
 | --- | --- | --- |
+| macOS desktop | 2026-11-20 | Adds a double-click app, Artisan setup and restore, four live readings, and English / Simplified Chinese switching. |
 | v0.2.3 | 2026-11-05 | Organizes packaging by platform and artwork by purpose, with platform-specific build output folders. User launchers are unchanged. |
 | v0.2.2 | 2026-11-05 | One Mac Universal 2 download for Intel and Apple Silicon, with the same archive checked on both architectures. |
 | v0.2.1 | 2026-11-05 | Adds native Mac packaging, Bluetooth permission text, Mac launchers, a fixed shared state path, and simple Mac instructions. |

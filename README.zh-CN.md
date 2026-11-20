@@ -10,14 +10,18 @@ RoastSee NEXT → Artisan
 
 独立运行的咖啡烘焙数据 BLE 桥接程序。
 
+> **为什么提供独立桥接？** 按 LeBrew 当前的维护安排，Artisan 团队后续将不再负责 RoastSee NEXT 专属接入问题的修复。LeBrew 通过本桥接项目提供后续支持。蓝牙连接、数据采样和设备兼容性问题请在[本仓库 Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues)反馈。
+
+> **NEXT 固件适配版本为 1.2.0。** 请在设备的 **About / Info（关于信息）** 页面确认 **Kernel Version（内核版本）**。这一版本的 BLE 实时数据格式已通过源码核对和离线检查。其他固件版本，包括 1.2.1–1.2.4，尚无本桥接的实机验证记录。详见[固件兼容性](#next-固件兼容性)。
+
 [![English](https://img.shields.io/badge/Language-English-30363d?style=for-the-badge)](README.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
 
 <p align="center">
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-Windows-x64.zip">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip">
     <img src="assets/buttons/download-windows.zh-CN.svg" alt="下载 Windows ZIP 包" width="280">
   </a>
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest/download/RoastSeeNEXT-Artisan-macOS-universal2.zip">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip">
     <img src="assets/buttons/download-macos.zh-CN.svg" alt="下载 Mac 通用 ZIP 包" width="280">
   </a><br>
   Windows x64 · Intel 与 M 系列 Mac 共用一个包 · 无需安装 Python
@@ -31,9 +35,32 @@ RoastSee NEXT → Artisan
 
 [下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan 设置](#artisan-settings) · [快速上手](#快速上手) · [实测曲线](#recorded-test) · [固件兼容性](#next-固件兼容性) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
 
+<a id="快速上手"></a>
+
+## macOS 快速上手
+
+1. [下载 Mac 桌面版 ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip)后，单独安装 [Artisan](https://artisan-scope.org/download/)。完整解压桌面版 `RoastSeeNEXT-Artisan-macOS-universal2.zip`，双击其中的 **`RoastSeeNEXTBridge.app`**。Intel 和 M 系列 Mac 使用同一份 ZIP，包内已包含 Python。
+2. 保存记录并退出 Artisan。在桥接窗口点 **配置并打开 Artisan**，确认切换 ET／BT 主输入。软件会备份本次涉及的设置，将主输入切换为 **Prog**，填入包内采样程序及桌面状态文件路径，关闭 **Output**，并为 **Program 34** 和 **Program 56** 开启数值和曲线。其他附加设备和自定义标签会保留。
+3. 断开手机 App 与 NEXT 的连接，点 **连接 NEXT**。系统询问时允许蓝牙访问，再到 NEXT 上开始实时测量。默认仅接收数据。需要由桥接启动测量时，在连接前勾选 **连接后自动开始测量**。
+4. 桥接窗口显示色值、声学活动、变化率和波动量后，在 Artisan 点 **ON** 查看、点 **START** 记录。使用完毕点 **断开连接** 或关闭桥接窗口。
+
+要恢复原采样设置，退出 Artisan 后点 **恢复原设置**。移动桥接软件后重新配置一次，以更新采样程序的绝对路径。右上角可即时切换简体中文和 English，重开时会记住选择。
+
+NEXT 拒绝自动开始时，请在设备的实时烘焙页按 **开始**。如果 Artisan 已显示数值而曲线在图外，可在 **Config → Axes** 调整纵轴范围。
+
+### 命令行用法
+
+同一 ZIP 仍包含仅接收的 `START_HERE.command`、自动开始测量的 `START_LIVE.command` 和供[手动设置 Artisan](#artisan-settings) 使用的 `artisan_next_poll`。桌面版写入 `~/Library/Application Support/RoastSeeNEXT/desktop-latest.json`，命令行版使用同目录的 `latest.json`。排查可运行 `./START_HERE.command --log-level DEBUG`。离线自检用 `--mock-live --state FILE` 写入独立状态，再通过 `./artisan_next_poll --state FILE` 读取。
+
+<a id="mac-first-launch"></a>
+
+### macOS 首次打开
+
+桌面包采用临时签名，尚未做 Apple 公证。首次打开时若系统拦截，确认来源和文件完整性后，按 [Apple 官方“仍要打开”步骤](https://support.apple.com/zh-cn/102445)处理。点击连接时系统会请求蓝牙权限，可到 **系统设置 → 隐私与安全性 → 蓝牙** 查看授权。
+
 <a id="artisan-settings"></a>
 
-## ⚙️ 先看这里：Artisan 怎么设置
+## Artisan 手动设置
 
 **Windows 和 Mac 使用同一套 Artisan 设置。推荐添加两个附加设备组：`Program 34` 和 `Program 56`，共四路数据；需要距离时再加 `Program 78`。** 每个 Program 组包含两路，并不是只能读取两个数据。
 
@@ -59,43 +86,16 @@ RoastSee NEXT → Artisan
 
 **怎么看是否成功？** 检查附加通道的色值、声音等读数。二进制实时包没有温度，主 **ET / BT 为 `-1` 是预期行为**。当前官方 Program 接口只读取前 **10 列**，没有 `Program 1112 / 1314 / 1516`，这套配置不直接显示一爆、二爆扩展数据，也不支持可靠的自动黄点标记。详见[官方 External Programs 帮助](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py)。
 
-<a id="快速上手"></a>
-
-## 🚀 四步开始使用
+## Windows x64 快速上手
 
 **Windows x64 · 目标 NEXT 固件：1.2.0。** 旧版未确认为支持；实机验证情况与黄点限制见[版本说明](#next-固件兼容性)。
 
-1. **下载并完整解压** [Windows ZIP 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)。保留整个文件夹，不需要安装 Python。
+1. **下载并完整解压** [Windows ZIP 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip)。保留整个文件夹，不需要安装 Python。
 2. **启动桥接。** 打开电脑蓝牙，关闭连接 NEXT 的手机 App，运行 `START_HERE.cmd`；在 NEXT 上进入实时烘焙页并开始测量。保持桥接窗口打开，等日志出现 `received live sample`。
 3. **配置 Artisan。** 先用 **Help → Save Settings** 保存原配置，再进入 **Config → Mode → Expert**，然后 **Config → Device**，输入方式选择 **Prog**。在 **External Program** 上排点击 **Select**，选择解压目录内的 `artisan_next_poll.exe`；**Output 不勾选**。这会改变主设备选择。
 4. **显示曲线。** 按[开头的 Artisan 设置](#artisan-settings)添加 **`Program 34` 和 `Program 56`**，开启所需通道的 **LCD / Curve**。点击 **ON** 查看数据，需要记录曲线时再点击 **START**。
 
 **停止：** 在桥接窗口按 **Ctrl+C**。其他数据通道和自动启动测量的方式见[详细配置](#详细配置)。
-
-### 🍎 Mac 同样四步
-
-1. **只下载一个 Mac ZIP**：[下载页](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)选择 **`RoastSeeNEXT-Artisan-macOS-universal2.zip`**，Intel 和 M 系列 Mac 都用它。完整解压，保留整个文件夹，不要单独移出 `.app`；无需安装 Python，也不用判断芯片类型。
-2. **启动桥接。** 打开 `START_HERE.command`，允许蓝牙权限，再在 NEXT 上开始实时测量。保持终端窗口打开；需要自动开始测量时，明确选择 `START_LIVE.command`。
-3. **配置 Artisan。** 按上面第 3 步操作，但 **External Program 选择解压目录里的 `artisan_next_poll`**，没有 `.exe` 后缀，也不要选择 `.app`。改动前先保存原有 Artisan 配置。
-4. 按[开头的 Artisan 设置](#artisan-settings)添加 **`Program 34` 和 `Program 56`**，开启 **LCD / Curve**，点击 **ON** 查看数据，点击 **START** 开始记录。停止桥接按 **Ctrl+C**。
-
-<a id="mac-first-launch"></a>
-
-#### 🔐 首次打开：macOS 提示安全问题
-
-当前 Mac 包采用临时签名，**尚未做 Apple 公证**。如果提示“无法验证开发者”或“Apple 无法检查是否包含恶意软件”，先确认文件从本仓库下载且未经修改，再按下面操作：
-
-1. 尝试打开 `START_HERE.command`，出现提示后关闭提示框。
-2. 打开 **系统设置 → 隐私与安全性**。
-3. 向下找到 **安全性** 区域，核对被阻止的文件，点击 **仍要打开**，再次确认 **打开**。
-4. 重新打开 `START_HERE.command`。如果随后单独提示 `RoastSeeNEXTBridge` 被阻止，再对该文件按同样步骤核对并确认。
-5. 桥接请求蓝牙权限时选择允许；之后可在 **隐私与安全性 → 蓝牙** 中查看权限。
-
-**如果没有“仍要打开”按钮，或提示“将损坏你的电脑”“检测到恶意软件”，请先停止，把完整提示或截图反馈到 [Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues)。** 不要通过关闭 macOS 安全保护来跳过这类提示。参见 [Apple 官方步骤](https://support.apple.com/zh-cn/102445)。
-
-原生构建及离线检查环境为 macOS 15；更早系统和真实蓝牙接收尚未验证。这些检查没有复现用户 Mac 上的首次打开安全弹窗。
-
-Mac 的共享状态固定保存在 `~/Library/Application Support/RoastSeeNEXT/latest.json`，不受工作目录影响。排查时可运行 `./START_HERE.command --log-level DEBUG`。离线自检需给 `--mock-live` 指定独立的 `--state` 文件，再用 `./artisan_next_poll --state` 读取同一文件。
 
 <a id="recorded-test"></a>
 
@@ -129,11 +129,12 @@ Mac 的共享状态固定保存在 `~/Library/Application Support/RoastSeeNEXT/l
 
 ## 🔎 NEXT 固件兼容性
 
-NEXT 固件版本、硬件版本和本桥接的 `v0.1.x` 软件版本是三回事。使用前请在 NEXT 的 **About / Info（关于信息）** 页面查看**内核版本（Kernel Version）**。桥接不会自动查询固件版本，也不附带固件或升级器。
+NEXT 固件版本、硬件版本和桥接软件版本是三回事。使用前请在 NEXT 的 **About / Info（关于信息）** 页面查看**内核版本（Kernel Version）**。桥接不会自动查询固件版本，也不附带固件或升级器。
 
 | NEXT 固件版本 | 本次开源桥接的适用说明 |
 | --- | --- |
 | **1.2.0** | 本文二进制布局和参数含义的参考版本。已做源码核对与离线检查；黄点第 8/9 通道不能视为已验证的真实事件标志。 |
+| **1.2.1–1.2.4** | 后续固件版本，尚未做本桥接的端到端验证。 |
 | **1.1.5–1.1.8** | 历史联调版本，不代表本次已逐版验证兼容。统一 `NEXT:` 命令从 1.1.5 引入；交流中提到的 1.1.8 当时是内部测试固件，本仓库不提供该固件下载。 |
 | **1.1.4 及更早版本** | 旧命令集设备不支持较新的 `NEXT:` 命令。桥接使用旧别名 `roasting` / `start` 启动，但仅凭命令可用不能保证整体兼容或字段含义一致。 |
 | 其他 / 未知版本 | 尚未评估；使用前核对版本、实际数据包布局和字段含义。 |
@@ -146,9 +147,7 @@ NEXT 固件版本、硬件版本和本桥接的 `v0.1.x` 软件版本是三回�
 
 后续与 Marko Luther 的交流进一步明确了两类问题：蓝牙连接成功不一定代表设备已开始测量；NEXT 的色值、距离和声学数据应在 **Extra Devices** 查看，ET/BT 则用于烘焙机温度。此外，不同固件接受的命令集存在差异。这些实际问题促成了明确的启动方式、可观察的连接日志和完整的参数映射说明。
 
-10 月，Marko 在邮件中用 **“AI slub”**（原文，意指“AI 泔水”）批评了早期 [NEXT 网页上位机](https://github.com/lebrew-tech/RoastSee-NEXT-Console)，直率地质疑其完成度和实机可用性：他的 NEXT 可以建立蓝牙连接，但网页发出的页面控制命令在其设备上没有生效。后续排查确认了固件命令集的版本差异——网页按较新的 `NEXT:` 命令集开发，而他持有的设备接受旧版别名。这次反馈促使我们更明确地区分版本前提、协议支持与实机验证，并在本文说明适用边界。该反馈针对当时的网页上位机，不是对本次桥接打包版本的评测。
-
-> 可复现的兼容性问题，我们认真核对；至于形容词，暂时不在固件支持的命令集中。因此，这次把版本前提、数据包格式和未验证的边界写清楚：程序表现可以检查，不必靠一个标签来推断。
+早期联调发现，不同固件接受的页面控制命令不同。固件版本和数据字段请以本页的适配说明为准。
 
 Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容、调试和协议参考工具；设备与软件版本匹配时，原生接入可能更方便。参见 [Artisan 的 LeBrew 设备说明](https://artisan-scope.org/devices/lebrew/)。本仓库由 LeBrew 维护，与 Artisan 项目独立。
 
@@ -366,7 +365,7 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 - 新实时帧会替换状态，后续恢复实时数据时，摘要中的 FC/SC 可能消失。Artisan 轮询较慢时也可能错过单帧黄点脉冲。
 - 状态不包含时效、设备 ID 或 schema 校验。不要让多个接收端/设备共用一个状态路径。JSON 语法错误会返回占位值；手动写入类型错误的对象可能使轮询程序失败。
 - 重连时按名称重新扫描并选择匹配设备，没有设备地址选择器。不包含历史下载、固件烧录或完整设备控制。
-- 原生包覆盖 Windows x64 和 macOS Universal 2。同一份 Mac ZIP 分别在 arm64 与 x86_64 环境检查，但不等于已验证真实蓝牙兼容性；Linux 实机行为尚未验证。
+- 原生包覆盖 Windows x64 和 macOS Universal 2。Mac 桌面包内的原生文件含 arm64 与 x86_64 切片；Linux 实机行为尚未验证。
 
 ### 无设备离线自检
 
@@ -382,6 +381,8 @@ Remove-Item -LiteralPath $testState
 输出应与上面的 16 字段示例一致。该检查不需要设备，也不写入真实桥接状态。
 
 ## 🧰 源码运行与打包
+
+> **发布包来源。** 下方仓库脚本构建的是命令行版。发布页的 macOS 桌面包来自单独的 Mac 构建。
 
 在仓库根目录使用 Python 3.10 或更高版本：
 
@@ -433,6 +434,7 @@ dist/                     生成或下载的交付包，不入库
 
 | 桥接版本 | 日期 | 变化 |
 | --- | --- | --- |
+| macOS 桌面版 | 2026-11-20 | 双击启动，新增 Artisan 自动配置与恢复、四路实时预览和中英切换。 |
 | v0.2.3 | 2026-11-05 | 打包文件按平台、素材按用途归类，构建产物按平台存放；用户启动入口不变。 |
 | v0.2.2 | 2026-11-05 | Mac 改为一个 Universal 2 下载包，同一文件分别在 Intel 和 Apple Silicon 环境验收。 |
 | v0.2.1 | 2026-11-05 | 加入原生 Mac 打包、蓝牙权限说明、Mac 启动入口、固定共享状态路径和简明使用步骤。 |
