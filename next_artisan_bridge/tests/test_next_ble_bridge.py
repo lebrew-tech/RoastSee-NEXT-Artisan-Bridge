@@ -94,6 +94,20 @@ class BleBridgeTests(unittest.TestCase):
             self.assertEqual(reading["distance"], 327)
             self.assertEqual(reading["cnt_record"], -1)
 
+    def test_notifies_desktop_after_the_poller_can_read_the_sample(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store = StateStore(Path(tmp) / "latest.json")
+            visible_samples = []
+
+            def on_sample(reading):
+                self.assertEqual(store.read(), reading)
+                visible_samples.append(reading["curve_agtron"])
+
+            bridge = NextBleBridge(store, on_sample=on_sample)
+            bridge.on_notification(object(), bytearray(b"84.6,3,1.2,84.9,327,0,0\r\n\x00"))
+
+            self.assertEqual(visible_samples, [84.6])
+
     def test_bridge_latches_yellow_time_and_emits_yellow_flag_once(self):
         with tempfile.TemporaryDirectory() as tmp:
             store = StateStore(Path(tmp) / "latest.json")

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+from collections.abc import Callable
 import logging
 from pathlib import Path
 
@@ -47,14 +48,23 @@ class NextBleBridge:
         store: StateStore,
         scan_timeout: float = 10.0,
         auto_start_live: bool = False,
+        *,
+        on_status: Callable[[str, str], None] | None = None,
+        on_sample: Callable[[dict[str, float | int]], None] | None = None,
     ) -> None:
         self.store = store
         self.scan_timeout = scan_timeout
         self.auto_start_live = auto_start_live
+        self.on_status = on_status
+        self.on_sample = on_sample
         self.parser = LiveFrameParser()
         self.last_event_summary: dict[str, float | int] | None = None
         self._yellow_time_latched: int | None = None
         self._yellow_flag_pending = False
+
+    def _status(self, status: str, detail: str = "") -> None:
+        if self.on_status is not None:
+            self.on_status(status, detail)
 
     def _normalize_yellow_fields(self, reading: dict[str, float | int]) -> dict[str, float | int]:
         """Latch the first reported yellow time and expose a one-shot flag."""
@@ -98,9 +108,12 @@ class NextBleBridge:
             reading = self._normalize_yellow_fields(reading)
             try:
                 self.store.write(reading)
-            except OSError:
+            except OSError as exc:
                 LOG.exception("failed to write latest state to %s", self.store.path)
+                self._status("storage_error", str(exc))
                 continue
+            if self.on_sample is not None:
+                self.on_sample(reading)
             LOG.info(
                 "received live sample: agtron=%.3f distance=%s",
                 reading["curve_agtron"],
@@ -111,6 +124,7 @@ class NextBleBridge:
         from bleak import BleakScanner
 
         LOG.info("scanning for RoastSeeNEXT")
+        self._status("scanning")
         devices = await BleakScanner.discover(timeout=self.scan_timeout)
         for device in devices:
             name = (device.name or "").lower()
@@ -126,7 +140,9 @@ class NextBleBridge:
             raise RuntimeError("RoastSeeNEXT was not found during BLE scan")
 
         LOG.info("connecting to %s (%s)", device.name, device.address)
+        self._status("connecting")
         async with BleakClient(device) as client:
+            self._status("waiting")
             await client.start_notify(CHARACTERISTIC_UUID, self.on_notification)
             LOG.info("subscribed to %s", CHARACTERISTIC_UUID)
             for command in live_commands(auto_start_live=self.auto_start_live):
@@ -144,6 +160,7 @@ class NextBleBridge:
                 raise
             except Exception as exc:  # BLE backends expose varied exception types.
                 LOG.warning("BLE session ended: %s; retrying in %.1fs", exc, retry_seconds)
+                self._status("retrying", str(exc))
                 await asyncio.sleep(retry_seconds)
 
 

@@ -18,7 +18,7 @@ RoastSee NEXT → Artisan
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
 
 <p align="center">
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-20/RoastSeeNEXT-Artisan-Windows-x64.zip">
     <img src="assets/buttons/download-windows.zh-CN.svg" alt="下载 Windows ZIP 包" width="280">
   </a>
   <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip">
@@ -36,6 +36,17 @@ RoastSee NEXT → Artisan
 [下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan 设置](#artisan-settings) · [快速上手](#快速上手) · [实测曲线](#recorded-test) · [固件兼容性](#next-固件兼容性) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
 
 <a id="快速上手"></a>
+
+## Windows 桌面软件
+
+1. 单独安装 [Artisan](https://artisan-scope.org/download/)。[下载 Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-20/RoastSeeNEXT-Artisan-Windows-x64.zip)，完整解压后双击 **`RoastSeeNEXT-Artisan.exe`**。
+2. 退出 Artisan 后，点击 **配置并打开 Artisan**。软件会备份当前采样设置，为色值、声学活动、色值变化率和色值波动量开启数值和曲线显示。后续使用时点击 **打开 Artisan**。
+3. 打开电脑蓝牙，断开手机 App 与 NEXT 的连接，点击 **连接 NEXT**。在设备上开始实时测量，也可在连接前勾选 **连接后自动开始测量**。
+4. 桥接窗口出现实时数据后，在 Artisan 点 **ON** 查看数据，再点 **START** 开始记录。使用完毕可在窗口点击 **断开连接** 或关闭窗口。
+
+自动配置会把 Artisan 的 ET／BT 主输入切到 **Prog**。需要切回原烘焙机采样时，退出 Artisan 并点击 **恢复原设置**。移动软件目录后，重新配置一次即可更新采样程序路径。
+
+在窗口右上角可切换 **简体中文 / English**，软件会记住上次选择。
 
 ## macOS 快速上手
 
@@ -85,17 +96,6 @@ NEXT 拒绝自动开始时，请在设备的实时烘焙页按 **开始**。如�
 5. **开始查看和记录：** 保持桥接窗口打开，在 NEXT 上开始实时测量，等日志出现 `received live sample`；回到 Artisan，点击 **ON** 查看数据，再点击 **START** 开始记录。桥接按 **Ctrl+C** 退出；设备测量需在 NEXT 上停止。
 
 **怎么看是否成功？** 检查附加通道的色值、声音等读数。二进制实时包没有温度，主 **ET / BT 为 `-1` 是预期行为**。当前官方 Program 接口只读取前 **10 列**，没有 `Program 1112 / 1314 / 1516`，这套配置不直接显示一爆、二爆扩展数据，也不支持可靠的自动黄点标记。详见[官方 External Programs 帮助](https://github.com/artisan-roaster-scope/artisan/blob/master/src/help/programs_help.py)。
-
-## Windows x64 快速上手
-
-Windows 和 macOS 支持相同的 [NEXT 实时数据格式](#next-固件兼容性)。当前公开的 Windows 包通过 `START_HERE.cmd` 启动，需要手动配置 Artisan。
-
-1. **下载并完整解压** [Windows ZIP 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip)。保留整个文件夹，不需要安装 Python。
-2. **启动桥接。** 打开电脑蓝牙，关闭连接 NEXT 的手机 App，运行 `START_HERE.cmd`；在 NEXT 上进入实时烘焙页并开始测量。保持桥接窗口打开，等日志出现 `received live sample`。
-3. **配置 Artisan。** 先用 **Help → Save Settings** 保存原配置，再进入 **Config → Mode → Expert**，然后 **Config → Device**，输入方式选择 **Prog**。在 **External Program** 上排点击 **Select**，选择解压目录内的 `artisan_next_poll.exe`；**Output 不勾选**。这会改变主设备选择。
-4. **显示曲线。** 按[开头的 Artisan 设置](#artisan-settings)添加 **`Program 34` 和 `Program 56`**，开启所需通道的 **LCD / Curve**。点击 **ON** 查看数据，需要记录曲线时再点击 **START**。
-
-**停止：** 在桥接窗口按 **Ctrl+C**。其他数据通道和自动启动测量的方式见[详细配置](#详细配置)。
 
 <a id="recorded-test"></a>
 
@@ -170,12 +170,13 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 
 ## 🧭 详细配置
 
-### 1 · 解压和连接
+### 1 · Windows 命令行模式
 
-从 [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases) 下载 Windows ZIP，**完整解压整个目录**。`_internal` 必须与两个 EXE 一起保留。便携包无需另外安装 Python 或 pip 依赖。电脑需为支持 BLE 的 Windows 10/11 x64；本次构建检查环境为 Windows 11。
+从 [Releases](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases) 下载 Windows ZIP，**完整解压整个目录**。`_internal` 必须与 EXE 放在同一目录。便携包无需另外安装 Python 或 pip 依赖。电脑需为支持 BLE 的 Windows 10/11 x64；本次构建检查环境为 Windows 11。
 
 | 文件 | 用途 |
 | --- | --- |
+| `RoastSeeNEXT-Artisan.exe` | 桌面版入口，可配置或恢复 Artisan 并连接 NEXT。 |
 | `START_HERE.cmd` | 只读接收；在 NEXT 本机手动开始测量 |
 | `START_LIVE.cmd` | 自动进入实时页面并启动测量 |
 | `RoastSeeNEXTBridge.exe` | 长期运行的接收程序，使用期间保持打开 |
@@ -401,7 +402,7 @@ python -m unittest discover -s next_artisan_bridge/tests -v
 powershell -ExecutionPolicy Bypass -File packaging/windows/build_windows.ps1
 ```
 
-脚本运行回归测试、构建共享运行时的两个程序、验证 EXE 离线链路，最后在 `dist/windows/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
+脚本运行回归测试、构建共享运行时的桌面程序和命令行工具、验证 EXE 离线链路，最后在 `dist/windows/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
 
 在 Mac 上使用 python.org 的 Universal 2 Python 3.12 及包含双架构的运行依赖，安装 `pyinstaller==6.22.3` 后运行 `bash packaging/macos/build_macos.sh`。脚本构建 Universal 2，加入蓝牙权限说明，检查签名、模拟帧链路及每个 Mach-O 文件的两种架构，在 `dist/macos/` 生成保留执行权限的 ZIP。GitHub Actions 把同一 ZIP 分别交给 Apple Silicon 和 Intel 环境解压、运行验证，通过后才与 Windows 包一起发布。
 

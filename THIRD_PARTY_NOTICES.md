@@ -6,6 +6,7 @@ following third-party components, which retain their own licenses and notices:
 | Component | Version in this build | License / notice |
 | --- | --- | --- |
 | CPython and bundled libraries | 3.12.4 | [Python license and included library notices](licenses/Python-LICENSE.txt) |
+| Tcl and Tk | 8.6.13 | [Tcl license](licenses/Tcl.txt), [Tk license](licenses/Tk.txt) |
 | Bleak | 3.0.2 | [MIT](licenses/bleak-MIT.txt) |
 | typing_extensions | 4.16.0 | [Python Software Foundation license](licenses/typing_extensions.txt) |
 | PyWinRT runtime and Windows projections | 3.2.1 | [MIT](licenses/PyWinRT-MIT.txt) |

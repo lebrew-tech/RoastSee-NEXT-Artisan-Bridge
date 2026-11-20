@@ -8,9 +8,12 @@ import tempfile
 
 
 def verify(bundle):
+    from next_artisan_bridge.artisan_setup import poll_command
+
     bundle = Path(bundle).resolve()
     bridge = bundle / "RoastSeeNEXTBridge.exe"
     poll = bundle / "artisan_next_poll.exe"
+    assert (bundle / "RoastSeeNEXT-Artisan.exe").is_file()
     with tempfile.TemporaryDirectory(prefix="NEXT bridge 验收 ") as temp:
         env = {
             **os.environ, "LOCALAPPDATA": temp, "PYTHONPATH": "", "PYTHONHOME": "",
@@ -43,10 +46,18 @@ def verify(bundle):
         override = Path(temp) / "custom state.json"
         run(bridge, "--state", str(override), "--mock-live")
         assert run(poll, "--state", str(override)).stdout == sample.stdout
+        # Match the Windows shell invocation used by Artisan's Program input.
+        configured = subprocess.run(
+            poll_command(poll, override), shell=True, cwd=temp, env=env,
+            capture_output=True, text=True, check=True, timeout=20,
+        )
+        assert configured.stdout == sample.stdout
+        assert not configured.stderr
         override.write_text("invalid JSON")
         assert run(poll, "--state", str(override)).stdout == missing.stdout
-    print("Frozen bundle OK: native backend imports, help, default/override state, 16 fields, missing/corrupt state.")
+    print("Frozen bundle OK: native backend imports, launchers, configured Artisan command, 16 fields and isolated state.")
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     verify(sys.argv[1])
