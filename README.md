@@ -12,7 +12,7 @@ A standalone BLE bridge for coffee-roasting data.
 
 > **Why a standalone bridge?** Under LeBrew’s current support arrangement, the Artisan team will no longer handle fixes for RoastSee NEXT-specific integration issues. LeBrew handles ongoing support through this bridge. Please report Bluetooth, sampling, and device compatibility issues in [this repository’s Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues).
 
-> **Target NEXT firmware is 1.2.0.** Check **Kernel Version** under **About / Info** on your NEXT. The 1.2.0 BLE live-data format was checked against source and tested offline. Other firmware versions, including 1.2.1–1.2.4, have no hardware validation record for this bridge. See [firmware compatibility](#next-firmware-compatibility).
+> **Supported NEXT firmware for live data: 1.1.4–1.1.8 and 1.2.0–1.2.4, inclusive.** Check **About / Info → Kernel Version** on your NEXT. Samples from all ten versions passed offline decoding and Artisan Program formatting. See [firmware compatibility](#next-firmware-compatibility) for the test scope.
 
 [![English](https://img.shields.io/badge/Language-English-1f6feb?style=for-the-badge)](README.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-30363d?style=for-the-badge)](README.zh-CN.md)
@@ -88,7 +88,7 @@ The desktop package is ad-hoc signed and has no Apple notarization. If macOS blo
 
 ## Windows x64 quick start
 
-**Windows x64 · Target NEXT firmware: 1.2.0.** Older versions are not declared supported; hardware verification and yellow-event limits are explained [here](#next-firmware-compatibility).
+The Windows and macOS packages support the same [NEXT live-data formats](#next-firmware-compatibility). The public Windows package uses `START_HERE.cmd` and manual Artisan setup.
 
 1. **Download and extract** the [Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip). Keep the entire folder together; no Python installation is needed.
 2. **Start the bridge.** Enable Bluetooth, close phone apps connected to NEXT, and run `START_HERE.cmd`. On NEXT, enter live roasting and start measurement. Keep the bridge window open; wait for `received live sample`.
@@ -113,7 +113,7 @@ Time is relative to the profile's recorded CHARGE marker. Vertical lines show it
 
 This tool connects LeBrew RoastSee NEXT to **[Artisan](https://artisan-scope.org/)**, an open-source application for recording and examining coffee roast profiles. The bridge receives NEXT readings over Bluetooth LE and presents them through Artisan's external **Program** interface. Install Artisan separately; its [source code](https://github.com/artisan-roaster-scope/artisan), [downloads](https://artisan-scope.org/download/), and [documentation](https://artisan-scope.org/docs/) are maintained by the Artisan team.
 
-**Target NEXT version: firmware 1.2.0.** Supported scope is the documented 27-byte BLE live-frame format and Artisan Program data export, checked against source and offline tests. No NEXT firmware version has end-to-end hardware certification in this release. Accurate automatic yellow/DRY tagging is outside the supported scope because the yellow-channel mismatch remains unresolved. **Older firmware and unknown versions are not declared supported.**
+Start live measurement on the NEXT and the bridge sends its readings to Artisan. Mark the yellow point (DRY) manually in Artisan. The bridge’s yellow channels do not reliably identify this event.
 
 ## 🌐 Related tools
 
@@ -123,7 +123,7 @@ This tool connects LeBrew RoastSee NEXT to **[Artisan](https://artisan-scope.org
 | One-click firmware updater | [LEBREW Firmware Updater](https://github.com/lebrew-tech/LEBREW-Firmware-Updater) · [Downloads](https://github.com/lebrew-tech/LEBREW-Firmware-Updater/releases/latest) | A separate guided utility for product selection, firmware download and flashing. |
 | Artisan | [Artisan source](https://github.com/artisan-roaster-scope/artisan) · [Downloads](https://artisan-scope.org/download/) | The roast-recording application receiving this bridge's Program output. |
 
-The bridge package does not include these applications or any firmware. For the updater, select the correct NEXT model and confirm the actual firmware version offered by its published catalog; do not assume its default latest version is 1.2.0. After an update, confirm the device's Kernel Version again.
+The bridge package contains no firmware. If you use the updater, select your NEXT model and check the installed Kernel Version against the table below.
 
 <a id="next-firmware-compatibility"></a>
 
@@ -131,15 +131,15 @@ The bridge package does not include these applications or any firmware. For the 
 
 NEXT firmware versions, hardware revisions, and bridge release numbers are separate. Check the NEXT's **About / Info** page and read **Kernel Version (内核版本)** before selecting a setup. The bridge does not query firmware versions automatically and does not include a firmware image or updater.
 
-| NEXT firmware | Status for this open-source bridge |
+| NEXT firmware | How live-data compatibility was checked |
 | --- | --- |
-| **1.2.0** | Reference version for the binary layout and parameter meanings documented here. Source inspection and offline checks only; yellow slots 8/9 are not validated true event markers. |
-| **1.2.1–1.2.4** | Later firmware builds. This bridge has no end-to-end validation for these versions. |
-| **1.1.5–1.1.8** | Historical integration versions; not an independently verified compatibility range for this release. The unified `NEXT:` commands were introduced in 1.1.5. The 1.1.8 build discussed during integration was an internal test build, not a firmware download supplied here. |
-| **1.1.4 and earlier** | Legacy devices. The older command set does not support the newer `NEXT:` commands. The bridge uses the legacy `roasting` / `start` startup aliases, but that alone does not establish full compatibility or identical field meanings. |
-| Other / unknown | Not assessed; check firmware, incoming packet layout, and field semantics before relying on the data. |
+| **1.1.4–1.1.8** | The bridge decoded 27-byte BLE frames from the 1.1.4–1.1.7 firmware encoders and the example in the 1.1.8 protocol specification. |
+| **1.2.0–1.2.4** | The same check passed with frames from the 1.2.0 and 1.2.2–1.2.4 encoders and the example in the 1.2.1 firmware acceptance record. |
+| Other versions | Outside the verified range. |
 
-The binary parser recognizes `AA 55 14 ... CRC ... 53 42`; recognizing that envelope is not a guarantee that every firmware assigns the same meaning to each payload field. In particular, the inspected **1.2.0 `time_yellow` and variability semantics differ from legacy descriptions**. Use the packet notes and known limits below. The documented Artisan setup requires Program / +Program channels; a minimum end-to-end-tested Artisan version has not been established for this bridge release.
+Each sample produced the expected color, acoustic activity, rate of change and distance in Artisan Program output. These were offline checks. A complete roast from NEXT to Artisan has yet to be verified on hardware for each version. The historical recording above does not identify its firmware.
+
+Firmware 1.2.0 is the reference for the field descriptions below. The meaning of the yellow and variability fields can change across versions. Artisan needs Program / +Program channels. The minimum Artisan version for this setup has yet to be verified on hardware.
 
 ## 💡 Why this project exists
 
@@ -164,7 +164,7 @@ Artisan also offers native NEXT support. This project remains a standalone compa
 
 ![NEXT → bridge → state file → poller → Artisan](assets/diagrams/data-flow.svg)
 
-> **Firmware semantics matter.** The parser accepts the 27-byte binary frame used by the inspected 1.2.0 firmware, plus two ASCII formats. Some legacy field names do not describe their current firmware meaning. In particular, read the yellow-time and variability notes below before using those channels.
+> **Field meanings depend on the firmware.** The parser accepts the 27-byte BLE frames listed above and two ASCII formats. See the yellow-time and variability notes below when interpreting these channels.
 
 <a id="setup-details"></a>
 

@@ -12,7 +12,7 @@ RoastSee NEXT → Artisan
 
 > **为什么提供独立桥接？** 按 LeBrew 当前的维护安排，Artisan 团队后续将不再负责 RoastSee NEXT 专属接入问题的修复。LeBrew 通过本桥接项目提供后续支持。蓝牙连接、数据采样和设备兼容性问题请在[本仓库 Issues](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/issues)反馈。
 
-> **NEXT 固件适配版本为 1.2.0。** 请在设备的 **About / Info（关于信息）** 页面确认 **Kernel Version（内核版本）**。这一版本的 BLE 实时数据格式已通过源码核对和离线检查。其他固件版本，包括 1.2.1–1.2.4，尚无本桥接的实机验证记录。详见[固件兼容性](#next-固件兼容性)。
+> **支持实时数据接入的 NEXT 固件为 1.1.4–1.1.8 和 1.2.0–1.2.4，含首尾版本。** 在设备的 **关于信息（About / Info）→ 内核版本（Kernel Version）** 中查看版本号。这十个版本的样包都通过了离线解码和 Artisan 采样输出检查。详见[固件兼容性](#next-固件兼容性)。
 
 [![English](https://img.shields.io/badge/Language-English-30363d?style=for-the-badge)](README.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
@@ -88,7 +88,7 @@ NEXT 拒绝自动开始时，请在设备的实时烘焙页按 **开始**。如�
 
 ## Windows x64 快速上手
 
-**Windows x64 · 目标 NEXT 固件：1.2.0。** 旧版未确认为支持；实机验证情况与黄点限制见[版本说明](#next-固件兼容性)。
+Windows 和 macOS 支持相同的 [NEXT 实时数据格式](#next-固件兼容性)。当前公开的 Windows 包通过 `START_HERE.cmd` 启动，需要手动配置 Artisan。
 
 1. **下载并完整解压** [Windows ZIP 包](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/v0.2.3/RoastSeeNEXT-Artisan-Windows-x64.zip)。保留整个文件夹，不需要安装 Python。
 2. **启动桥接。** 打开电脑蓝牙，关闭连接 NEXT 的手机 App，运行 `START_HERE.cmd`；在 NEXT 上进入实时烘焙页并开始测量。保持桥接窗口打开，等日志出现 `received live sample`。
@@ -113,7 +113,7 @@ NEXT 拒绝自动开始时，请在设备的实时烘焙页按 **开始**。如�
 
 本工具将 LeBrew RoastSee NEXT 接入 **[Artisan](https://artisan-scope.org/)**。Artisan 是用于记录和分析咖啡烘焙曲线的开源软件；桥接通过 BLE 接收 NEXT 数据，再交给 Artisan 的外部 **Program** 接口。Artisan 需另外安装，其[源码](https://github.com/artisan-roaster-scope/artisan)、[下载](https://artisan-scope.org/download/)和[文档](https://artisan-scope.org/docs/)由 Artisan 团队维护。
 
-**目标适配版本：NEXT 固件 1.2.0。** 支持范围为本文所列 27 字节 BLE 实时帧格式及 Artisan Program 数据输出，依据源码核对与离线测试；本次尚无任何 NEXT 固件版本完成端到端实机认证。黄点通道差异仍未解决，准确自动标记黄点 / DRY 不在支持承诺内。**旧固件和未知版本不列为已确认支持。**
+在 NEXT 上开始实时测量后，桥接会把读数交给 Artisan。黄点（DRY）请在 Artisan 中手动标记，桥接的黄点通道仍无法可靠识别这一事件。
 
 ## 🌐 相关软件与下载
 
@@ -123,7 +123,7 @@ NEXT 拒绝自动开始时，请在设备的实时烘焙页按 **开始**。如�
 | 一键烧录程序 | [LEBREW Firmware Updater](https://github.com/lebrew-tech/LEBREW-Firmware-Updater) · [下载程序](https://github.com/lebrew-tech/LEBREW-Firmware-Updater/releases/latest) | 独立的型号选择、固件下载与烧录工具。 |
 | Artisan | [Artisan 源码](https://github.com/artisan-roaster-scope/artisan) · [下载 Artisan](https://artisan-scope.org/download/) | 接收本桥接 Program 输出的烘焙曲线记录软件。 |
 
-桥接包不附带以上软件或固件。使用烧录工具时，请选择正确的 NEXT 型号，并核对发布目录中实际提供的固件版本，不要把默认“最新版本”自动当作 1.2.0；更新后再次在设备上确认内核版本。
+桥接包不含固件。使用烧录工具时，请选对 NEXT 型号，并按下表核对设备上实际安装的内核版本。
 
 <a id="next-固件兼容性"></a>
 
@@ -131,15 +131,15 @@ NEXT 拒绝自动开始时，请在设备的实时烘焙页按 **开始**。如�
 
 NEXT 固件版本、硬件版本和桥接软件版本是三回事。使用前请在 NEXT 的 **About / Info（关于信息）** 页面查看**内核版本（Kernel Version）**。桥接不会自动查询固件版本，也不附带固件或升级器。
 
-| NEXT 固件版本 | 本次开源桥接的适用说明 |
+| NEXT 固件版本 | 实时数据兼容依据 |
 | --- | --- |
-| **1.2.0** | 本文二进制布局和参数含义的参考版本。已做源码核对与离线检查；黄点第 8/9 通道不能视为已验证的真实事件标志。 |
-| **1.2.1–1.2.4** | 后续固件版本，尚未做本桥接的端到端验证。 |
-| **1.1.5–1.1.8** | 历史联调版本，不代表本次已逐版验证兼容。统一 `NEXT:` 命令从 1.1.5 引入；交流中提到的 1.1.8 当时是内部测试固件，本仓库不提供该固件下载。 |
-| **1.1.4 及更早版本** | 旧命令集设备不支持较新的 `NEXT:` 命令。桥接使用旧别名 `roasting` / `start` 启动，但仅凭命令可用不能保证整体兼容或字段含义一致。 |
-| 其他 / 未知版本 | 尚未评估；使用前核对版本、实际数据包布局和字段含义。 |
+| **1.1.4–1.1.8** | 桥接已成功解码 1.1.4–1.1.7 固件组包函数生成的 27 字节蓝牙报文，以及 1.1.8 协议文档中的样包。 |
+| **1.2.0–1.2.4** | 用 1.2.0、1.2.2–1.2.4 固件组包函数生成的报文和 1.2.1 固件验收记录中的样包做了相同检查，均通过。 |
+| 其他版本 | 尚未核实。 |
 
-二进制解析器能识别 `AA 55 14 ... CRC ... 53 42` 帧，并不意味着所有固件中每个字段的含义都相同。尤其是已核查 **1.2.0 的 `time_yellow` 和波动量含义与历史描述不同**，请结合下文协议和限制使用。Artisan 侧需要 Program / +Program 通道；本桥接尚未建立经过端到端测试的最低 Artisan 版本要求。
+各版本样包均能输出预期的 Artisan 采样数据，包括色值、声学活动、色值变化率和距离。本次为离线验证，尚未逐版用 NEXT 真机在 Artisan 中完整记录一炉。上面的历史实测曲线没有记录固件版本。
+
+下文的字段说明以 1.2.0 为参考。黄点和波动量字段的含义随固件版本而异。Artisan 需提供 Program / +Program 通道，最低可用的 Artisan 版本还有待实机验证。
 
 ## 💡 为什么开发这个程序
 
@@ -164,7 +164,7 @@ Artisan 本身也提供 NEXT 原生支持。本项目继续作为独立的兼容
 
 ![NEXT 经桥接、状态文件和轮询程序接入 Artisan](assets/diagrams/data-flow.svg)
 
-> **字段含义取决于固件。** 桥接支持已核查的 1.2.0 固件所用 27 字节二进制帧，以及两种兼容 ASCII 输入。部分历史字段名与当前含义不同，使用前请阅读下文“黄点”和“波动量”的说明。
+> **字段含义取决于固件。** 桥接能解析上述版本的 27 字节蓝牙报文，也兼容两种 ASCII 输入。使用黄点和波动量通道时，请参照下文对应的字段说明。
 
 <a id="详细配置"></a>
 
