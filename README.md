@@ -18,10 +18,10 @@ A standalone BLE bridge for coffee-roasting data.
 [![简体中文](https://img.shields.io/badge/语言-简体中文-30363d?style=for-the-badge)](README.zh-CN.md)
 
 <p align="center">
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-20/RoastSeeNEXT-Artisan-Windows-x64.zip">
-    <img src="assets/buttons/download-windows.svg" alt="Download Windows ZIP" width="280">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-Windows-x64-Setup.exe">
+    <img src="assets/buttons/download-windows.svg" alt="Download Windows installer (EXE)" width="280">
   </a>
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-macOS-universal2.zip">
     <img src="assets/buttons/download-macos.svg" alt="Download Mac Universal 2 ZIP" width="280">
   </a><br>
   Windows x64 · One Mac download for Intel and Apple Silicon · No Python installation needed
@@ -33,33 +33,47 @@ A standalone BLE bridge for coffee-roasting data.
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
 
-[Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan settings](#artisan-settings) · [Quick start](#quick-start) · [Recorded test](#recorded-test) · [Firmware compatibility](#next-firmware-compatibility) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
+[Download](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Desktop setup and recording](#desktop-guide) · [Manual Artisan settings](#artisan-settings) · [Recorded test](#recorded-test) · [Firmware compatibility](#next-firmware-compatibility) · [Packet reference](#packet-reference) · [Known limits](#diagnostics-and-known-limits)
 
 <a id="quick-start"></a>
 
-## Windows desktop app
+<a id="windows-desktop-app"></a>
+<a id="macos-quick-start"></a>
+<a id="desktop-guide"></a>
 
-1. Install [Artisan](https://artisan-scope.org/download/), then download and extract the [Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-20/RoastSeeNEXT-Artisan-Windows-x64.zip). Keep the directory together and double-click **`RoastSeeNEXT-Artisan.exe`**.
-2. With Artisan closed, select **Set up and open Artisan**. The bridge backs up the input settings and enables LCDs and curves for Agtron, acoustic activity, Agtron rate and Agtron variability. Select **Open Artisan** on later runs.
-3. Turn on Bluetooth, disconnect any phone app from NEXT, and select **Connect NEXT**. Start live measurement on the device or select the bridge's automatic measurement option before connecting.
-4. When live values appear in the bridge, click **ON** in Artisan to monitor and **START** to record. Use **Disconnect** or close the bridge when finished.
+## Desktop setup and recording
 
-Automatic setup switches Artisan's main input to **Prog**, so the original ET/BT source is replaced while this setup is active. To switch back, exit Artisan and select **Restore settings** in the bridge. If you move the bridge directory, run setup again to update the sampler path.
+### First-time installation and setup
 
-Use the language menu in the top-right corner to switch between English and Simplified Chinese. The bridge saves your selection.
+1. Install the [Artisan roast logger](https://artisan-scope.org/download/). If Artisan is open, save your current roast and quit. Turn on Bluetooth on your computer.
+2. Open the bridge for your platform.
 
-## macOS quick start
+   - **Windows 10/11 x64.** Download and double-click the [Windows installer (EXE)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-Windows-x64-Setup.exe). Select **Install**, leave “Launch RoastSee NEXT for Artisan” selected, and click **Finish**. On later runs, open **RoastSee NEXT for Artisan** from the Start menu.
+   - **Mac (Intel or Apple Silicon).** Download the [universal Mac ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-macOS-universal2.zip), extract it to a folder you plan to keep, and double-click **`RoastSeeNEXTBridge.app`**. If macOS blocks the first launch, see [First launch on macOS](#mac-first-launch).
 
-1. [Download the Mac desktop ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip) and install [Artisan](https://artisan-scope.org/download/) separately. Extract the entire `RoastSeeNEXT-Artisan-macOS-universal2.zip` desktop bundle and double-click **`RoastSeeNEXTBridge.app`**. The same ZIP runs on Apple Silicon and Intel and includes its Python runtime.
-2. Save your work and quit Artisan. In the bridge, select **Set up and open Artisan** and confirm the main ET/BT input change. The bridge backs up the affected settings, switches the input to **Prog**, sets the bundled poller and its desktop state path, turns off **Output**, and enables LCDs and curves for **Program 34** and **Program 56**. Other extra devices and custom labels are preserved.
-3. Disconnect any phone app from NEXT. Select **Connect NEXT**, allow Bluetooth access when asked, and start live measurement on NEXT. To have the bridge start measurement for you, check **Start measurement on connection** before connecting. Receiving is the default.
-4. When Agtron, voice, rate and variation appear in the bridge, select **ON** in Artisan to monitor and **START** to record. Use **Disconnect** or close the bridge when finished.
+3. In the **bridge window**, use the top-right menu to choose **English** or **简体中文**. Click **Set up and open Artisan**. If asked to locate Artisan, choose the installed `artisan.exe` on Windows or `Artisan.app` on Mac.
+4. Confirm the input change. The bridge backs up the affected settings, switches Artisan’s main ET/BT input to **Prog**, and opens Artisan. This temporarily replaces your roaster’s temperature input. **Program 34** (Agtron and acoustic activity) and **Program 56** (Agtron rate and variation) now show readings and curves. On later runs, just click **Open Artisan**.
 
-To recover the previous Artisan input and channel settings, quit Artisan and select **Restore settings**. Run setup again after moving the app to update the absolute poller path. The language picker in the top-right applies English or Simplified Chinese immediately and remembers your choice.
+### How to connect and record a roast
 
-If NEXT refuses automatic start, select **Start** on its live-roasting screen. If the readings appear but the curves are out of view, adjust the vertical range under **Config → Axes** in Artisan.
+1. **Connect in the bridge.** Turn on NEXT, disconnect any phone app using it, and click **Connect NEXT**. On Mac, allow Bluetooth access if prompted. Keep the bridge window open.
+2. **Start measurement on NEXT.** Open the device’s live-roasting screen and press **Start**. When the bridge says **Receiving live readings** and the Agtron value updates, data is reaching the computer. For automatic start, select **Start measurement on connection** before connecting.
+3. **Monitor and record in Artisan.** Click **ON** to see the extra-channel readings. Click **START** when you want to record this roast. ET/BT can show `-1` because the NEXT live packet carries no temperature.
+4. **Finish and save.** In Artisan, click **OFF** to stop recording and save the roast profile (`.alog`) from the **File** menu. Then stop measurement on NEXT and click **Disconnect** in the bridge. [Artisan Quick-Start Guide](https://artisan-scope.org/docs/quick-start-guide/)
 
-### Command-line use
+### If readings or curves are missing
+
+| What you see | What to do |
+| --- | --- |
+| The bridge keeps searching | Check that NEXT is on, the phone app is disconnected and Bluetooth is enabled. On Mac, check System Settings → Privacy & Security → Bluetooth. |
+| The bridge is connected but its readings show `—` | Press **Start** on the NEXT live-roasting screen and wait for a numeric Agtron reading in the bridge. |
+| Agtron updates in the bridge but Artisan has no curve | Click **ON** in Artisan. If the extra channels are blank, quit Artisan and select **Set up and open Artisan** in the current bridge. If it already says **Open Artisan**, open it and check [Program 34 and 56](#artisan-settings). If values appear, adjust **Config → Axes** so the Agtron values are within the vertical range. |
+
+**To switch back to your roaster**, save your roast, quit Artisan, click **Restore settings** in the bridge and confirm. Reopen Artisan. Restore these settings before uninstalling the bridge. If you move the portable app or switch from the old ZIP to the installer, run setup from the new location to update the sampler path.
+
+For a portable copy, [download the Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-Windows-x64.zip), extract the entire folder, double-click `RoastSeeNEXT-Artisan.exe`, and continue with the configuration steps above.
+
+### Mac command-line use (optional)
 
 The same folder includes `START_HERE.command` for receive-only mode, `START_LIVE.command` for automatic measurement, and `artisan_next_poll` for [manual Artisan setup](#artisan-settings). The desktop receiver writes `~/Library/Application Support/RoastSeeNEXT/desktop-latest.json` and the command-line receiver writes `~/Library/Application Support/RoastSeeNEXT/latest.json`. Use `./START_HERE.command --log-level DEBUG` to troubleshoot or pass `--mock-live --state FILE` for an offline test. Read the same file with `./artisan_next_poll --state FILE`.
 
@@ -136,6 +150,8 @@ NEXT firmware versions, hardware revisions, and bridge release numbers are separ
 | **1.1.4–1.1.8** | The bridge decoded 27-byte BLE frames from the 1.1.4–1.1.7 firmware encoders and the example in the 1.1.8 protocol specification. |
 | **1.2.0–1.2.4** | The same check passed with frames from the 1.2.0 and 1.2.2–1.2.4 encoders and the example in the 1.2.1 firmware acceptance record. |
 | Other versions | Outside the verified range. |
+
+Once you have checked your version, follow [Desktop setup and recording](#desktop-guide) to record your first roast.
 
 Each sample produced the expected color, acoustic activity, rate of change and distance in Artisan Program output. These were offline checks. A complete roast from NEXT to Artisan has yet to be verified on hardware for each version. The historical recording above does not identify its firmware.
 
@@ -344,7 +360,7 @@ Example before receiving an event summary:
 -1.000,-1,84.600,3,1.200,84.900,327,95,1,-1,-1,-1.000,-1.000,-1,-1.000,-1.000
 ```
 
-Missing, unreadable, or invalid-JSON state yields sixteen `-1` placeholders. The state is stored at `%LOCALAPPDATA%\RoastSeeNEXT\latest.json` on Windows. Both programs accept `--state PATH`; use the same path for both. This file contains the latest reading, not a time series.
+Missing, unreadable, or invalid-JSON state yields sixteen `-1` placeholders. On Windows the desktop app uses `desktop-latest.json` in the same folder. The command-line default is `%LOCALAPPDATA%\RoastSeeNEXT\latest.json` on Windows. Both programs accept `--state PATH`; use the same path for both. This file contains the latest reading, not a time series.
 
 <a id="diagnostics-and-known-limits"></a>
 
@@ -401,6 +417,8 @@ To reproduce the Windows x64 bundle, use Windows x64 Python 3.12, install runtim
 ```powershell
 powershell -ExecutionPolicy Bypass -File packaging/windows/build_windows.ps1
 ```
+
+To create the Windows installer, complete the Windows build above, then run `ISCC.exe packaging/windows/installer.iss` with Inno Setup 6.4 or later. The installer is written to `dist/windows/`.
 
 The script runs the regression tests, builds the desktop and command-line programs with a shared runtime, checks the frozen offline data path, and writes the ZIP under `dist/windows/`. Dependency license notices are included in the bundle. See [LICENSE](LICENSE) for the project's MIT license.
 

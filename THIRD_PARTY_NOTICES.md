@@ -22,3 +22,5 @@ and Windows.Storage.Streams.
 
 These notices describe this Windows build. If you rebuild with other versions,
 update the notices and license copies to match the components you redistribute.
+
+The Windows installer uses Inno Setup. The Simplified Chinese wizard translation comes from the [Inno Setup 6.4.3 source](https://github.com/jrsoftware/issrc/blob/is-6_4_3/Files/Languages/Unofficial/ChineseSimplified.isl). See [the Inno Setup license](licenses/Inno-Setup.txt).

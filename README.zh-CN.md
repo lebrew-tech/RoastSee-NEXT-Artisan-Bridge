@@ -18,10 +18,10 @@ RoastSee NEXT → Artisan
 [![简体中文](https://img.shields.io/badge/语言-简体中文-1f6feb?style=for-the-badge)](README.zh-CN.md)
 
 <p align="center">
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-20/RoastSeeNEXT-Artisan-Windows-x64.zip">
-    <img src="assets/buttons/download-windows.zh-CN.svg" alt="下载 Windows ZIP 包" width="280">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-Windows-x64-Setup.exe">
+    <img src="assets/buttons/download-windows.zh-CN.svg" alt="下载 Windows 安装程序（EXE）" width="280">
   </a>
-  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip">
+  <a href="https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-macOS-universal2.zip">
     <img src="assets/buttons/download-macos.zh-CN.svg" alt="下载 Mac 通用 ZIP 包" width="280">
   </a><br>
   Windows x64 · Intel 与 M 系列 Mac 共用一个包 · 无需安装 Python
@@ -33,33 +33,47 @@ RoastSee NEXT → Artisan
 [![Latest release](https://img.shields.io/github/v/release/lebrew-tech/RoastSee-NEXT-Artisan-Bridge)](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest)
 [![MIT](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
 
-[下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [Artisan 设置](#artisan-settings) · [快速上手](#快速上手) · [实测曲线](#recorded-test) · [固件兼容性](#next-固件兼容性) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
+[下载](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/latest) · [桌面版操作步骤](#desktop-guide) · [Artisan 手动设置](#artisan-settings) · [实测曲线](#recorded-test) · [固件兼容性](#next-固件兼容性) · [数据包参考](#数据包参考) · [排查与已知限制](#排查与已知限制)
 
 <a id="快速上手"></a>
 
-## Windows 桌面软件
+<a id="windows-桌面软件"></a>
+<a id="macos-快速上手"></a>
+<a id="desktop-guide"></a>
 
-1. 单独安装 [Artisan](https://artisan-scope.org/download/)。[下载 Windows ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-20/RoastSeeNEXT-Artisan-Windows-x64.zip)，完整解压后双击 **`RoastSeeNEXT-Artisan.exe`**。
-2. 退出 Artisan 后，点击 **配置并打开 Artisan**。软件会备份当前采样设置，为色值、声学活动、色值变化率和色值波动量开启数值和曲线显示。后续使用时点击 **打开 Artisan**。
-3. 打开电脑蓝牙，断开手机 App 与 NEXT 的连接，点击 **连接 NEXT**。在设备上开始实时测量，也可在连接前勾选 **连接后自动开始测量**。
-4. 桥接窗口出现实时数据后，在 Artisan 点 **ON** 查看数据，再点 **START** 开始记录。使用完毕可在窗口点击 **断开连接** 或关闭窗口。
+## 桌面版操作步骤
 
-自动配置会把 Artisan 的 ET／BT 主输入切到 **Prog**。需要切回原烘焙机采样时，退出 Artisan 并点击 **恢复原设置**。移动软件目录后，重新配置一次即可更新采样程序路径。
+### 首次安装与配置
 
-在窗口右上角可切换 **简体中文 / English**，软件会记住上次选择。
+1. 在电脑上安装烘焙记录软件 [Artisan](https://artisan-scope.org/download/)。如果已经打开，请保存当前记录并退出。打开电脑蓝牙。
+2. 按电脑系统打开桥接软件。
 
-## macOS 快速上手
+   - **Windows 10/11 x64**　下载并双击 [Windows 安装程序（EXE）](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-Windows-x64-Setup.exe)，点 **安装**。安装完成时保持“运行 RoastSee NEXT for Artisan”勾选，再点 **完成**。以后从开始菜单打开 **RoastSee NEXT for Artisan**。
+   - **Mac（Intel 或 M 系列）**　下载 [Mac 通用版 ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-macOS-universal2.zip)，完整解压到准备长期存放的文件夹，双击 **`RoastSeeNEXTBridge.app`**。首次打开受阻时，见 [macOS 首次打开](#mac-first-launch)。
 
-1. [下载 Mac 桌面版 ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/macos-desktop-2026-11-20/RoastSeeNEXT-Artisan-macOS-universal2.zip)后，单独安装 [Artisan](https://artisan-scope.org/download/)。完整解压桌面版 `RoastSeeNEXT-Artisan-macOS-universal2.zip`，双击其中的 **`RoastSeeNEXTBridge.app`**。Intel 和 M 系列 Mac 使用同一份 ZIP，包内已包含 Python。
-2. 保存记录并退出 Artisan。在桥接窗口点 **配置并打开 Artisan**，确认切换 ET／BT 主输入。软件会备份本次涉及的设置，将主输入切换为 **Prog**，填入包内采样程序及桌面状态文件路径，关闭 **Output**，并为 **Program 34** 和 **Program 56** 开启数值和曲线。其他附加设备和自定义标签会保留。
-3. 断开手机 App 与 NEXT 的连接，点 **连接 NEXT**。系统询问时允许蓝牙访问，再到 NEXT 上开始实时测量。默认仅接收数据。需要由桥接启动测量时，在连接前勾选 **连接后自动开始测量**。
-4. 桥接窗口显示色值、声学活动、变化率和波动量后，在 Artisan 点 **ON** 查看、点 **START** 记录。使用完毕点 **断开连接** 或关闭桥接窗口。
+3. 在**桥接窗口**右上角选 **简体中文** 或 **English**。点 **配置并打开 Artisan**。如果弹出文件选择框，Windows 选已安装的 `artisan.exe`，Mac 选 `Artisan.app`。
+4. 确认提示后，桥接会备份原采样设置，把 Artisan 的主输入切到 **Prog**，并打开 Artisan。原烘焙机的 ET／BT 温度采样会暂时被替换。**Program 34**（色值、声学活动）和 **Program 56**（色值变化率、波动量）的数值与曲线已自动开启。下次使用直接点 **打开 Artisan**。
 
-要恢复原采样设置，退出 Artisan 后点 **恢复原设置**。移动桥接软件后重新配置一次，以更新采样程序的绝对路径。右上角可即时切换简体中文和 English，重开时会记住选择。
+### 每炉如何连接、看曲线和记录
 
-NEXT 拒绝自动开始时，请在设备的实时烘焙页按 **开始**。如果 Artisan 已显示数值而曲线在图外，可在 **Config → Axes** 调整纵轴范围。
+1. **在桥接窗口连接。** 打开 NEXT，断开手机 App 对它的连接，点 **连接 NEXT**。首次使用 Mac 时，按系统提示允许蓝牙访问。保持桥接窗口打开。
+2. **在 NEXT 设备上开始测量。** 进入实时烘焙页，按 **开始**。桥接显示 **正在接收实时数据**，色值开始更新，就说明电脑已收到数据。想让桥接代为启动，可在连接前勾选 **连接后自动开始测量**。
+3. **在 Artisan 中查看和记录。** 先点 **ON**，在附加通道看色值等读数。准备记录这一炉时点 **START**。NEXT 的实时包没有温度，所以主温度 ET／BT 显示 `-1` 是正常的。
+4. **结束并保存。** 在 Artisan 点 **OFF** 停止记录，在 **File（文件）** 菜单保存本炉档案（`.alog`）。然后在 NEXT 设备上停止测量，回到桥接窗口点 **断开连接**。[Artisan 官方操作指南](https://artisan-scope.org/docs/quick-start-guide/)
 
-### 命令行用法
+### 没看到数据时
+
+| 看到什么 | 接下来做什么 |
+| --- | --- |
+| 桥接一直在搜索 | 确认 NEXT 已开机、手机 App 已断开、电脑蓝牙已打开。Mac 可在「系统设置 → 隐私与安全性 → 蓝牙」检查授权。 |
+| 桥接显示已连接，读数仍是 `—` | 在 NEXT 的实时烘焙页按 **开始**，等桥接的色值出现数字。 |
+| 桥接有色值，Artisan 没有曲线 | 先点 Artisan 的 **ON**。如果附加通道也没有数值，退出 Artisan，在当前桥接点 **配置并打开 Artisan**。若按钮已显示 **打开 Artisan**，则打开后检查 [Program 34 和 56 的设置](#artisan-settings)。如果已有数值，去 **Config → Axes** 调整纵轴，让色值落在显示范围内。 |
+
+要**切回原烘焙机**，请保存记录并退出 Artisan，在桥接窗口点 **恢复原设置** 并确认，再打开 Artisan。如要卸载桥接，请先恢复设置。移动便携版或从旧 ZIP 换到安装版后，也请从新位置再配置一次，更新采样程序路径。
+
+需要免安装版时，可[下载 Windows 便携 ZIP](https://github.com/lebrew-tech/RoastSee-NEXT-Artisan-Bridge/releases/download/desktop-2026-11-23/RoastSeeNEXT-Artisan-Windows-x64.zip)，完整解压后双击 `RoastSeeNEXT-Artisan.exe`，从上面的配置步骤继续。
+
+### Mac 命令行用法（可选）
 
 同一 ZIP 仍包含仅接收的 `START_HERE.command`、自动开始测量的 `START_LIVE.command` 和供[手动设置 Artisan](#artisan-settings) 使用的 `artisan_next_poll`。桌面版写入 `~/Library/Application Support/RoastSeeNEXT/desktop-latest.json`，命令行版使用同目录的 `latest.json`。排查可运行 `./START_HERE.command --log-level DEBUG`。离线自检用 `--mock-live --state FILE` 写入独立状态，再通过 `./artisan_next_poll --state FILE` 读取。
 
@@ -136,6 +150,8 @@ NEXT 固件版本、硬件版本和桥接软件版本是三回事。使用前请
 | **1.1.4–1.1.8** | 桥接已成功解码 1.1.4–1.1.7 固件组包函数生成的 27 字节蓝牙报文，以及 1.1.8 协议文档中的样包。 |
 | **1.2.0–1.2.4** | 用 1.2.0、1.2.2–1.2.4 固件组包函数生成的报文和 1.2.1 固件验收记录中的样包做了相同检查，均通过。 |
 | 其他版本 | 尚未核实。 |
+
+确认版本后，按[桌面版操作步骤](#desktop-guide)连接设备并记录第一炉。
 
 各版本样包均能输出预期的 Artisan 采样数据，包括色值、声学活动、色值变化率和距离。本次为离线验证，尚未逐版用 NEXT 真机在 Artisan 中完整记录一炉。上面的历史实测曲线没有记录固件版本。
 
@@ -344,7 +360,7 @@ Y_time:95,Y_agtron:84.6,Y_ROR:1.2,FC_time:180,FC_agtron:72.0,FC_ROR:2.3,SC_time:
 -1.000,-1,84.600,3,1.200,84.900,327,95,1,-1,-1,-1.000,-1.000,-1,-1.000,-1.000
 ```
 
-状态文件缺失、不可读或 JSON 语法错误时，输出 16 个 `-1`。Windows 默认文件为 `%LOCALAPPDATA%\RoastSeeNEXT\latest.json`。两个程序都支持 `--state PATH`，需要指向同一个文件。文件只保存最新状态，不保存完整曲线历史。
+状态文件缺失、不可读或 JSON 语法错误时，输出 16 个 `-1`。Windows 桌面版使用同目录下的 `desktop-latest.json`，命令行默认文件为 `%LOCALAPPDATA%\RoastSeeNEXT\latest.json`。两个程序都支持 `--state PATH`，需要指向同一个文件。文件只保存最新状态，不保存完整曲线历史。
 
 <a id="排查与已知限制"></a>
 
@@ -401,6 +417,8 @@ python -m unittest discover -s next_artisan_bridge/tests -v
 ```powershell
 powershell -ExecutionPolicy Bypass -File packaging/windows/build_windows.ps1
 ```
+
+需要构建单文件安装包时，先完成上述 Windows 构建，再用 Inno Setup 6.4 或更高版本运行 `ISCC.exe packaging/windows/installer.iss`。安装包输出在 `dist/windows/`。
 
 脚本运行回归测试、构建共享运行时的桌面程序和命令行工具、验证 EXE 离线链路，最后在 `dist/windows/` 生成 ZIP。包内包含依赖许可证说明。本项目按 [MIT 许可证](LICENSE) 开源。
 

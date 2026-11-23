@@ -54,10 +54,23 @@ jobs:
           python-version: '3.12.4'
       - run: python -m pip install -r requirements.txt pyinstaller==6.22.3
       - run: ./packaging/windows/build_windows.ps1
+      - name: Build the Windows installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" packaging/windows/installer.iss
+      - name: Check the installed Windows programs
+        shell: pwsh
+        run: |
+          $installer = Resolve-Path dist/windows/RoastSeeNEXT-Artisan-Windows-x64-Setup.exe
+          $setup = Start-Process -FilePath $installer -ArgumentList '/VERYSILENT /NORESTART /SUPPRESSMSGBOXES' -WindowStyle Hidden -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw "Setup exited with $($setup.ExitCode)" }
+          python packaging/windows/verify_bundle.py "$env:LOCALAPPDATA/Programs/RoastSeeNEXT-Artisan"
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
-          path: dist/windows/RoastSeeNEXT-Artisan-Windows-x64.zip
+          path: |
+            dist/windows/RoastSeeNEXT-Artisan-Windows-x64.zip
+            dist/windows/RoastSeeNEXT-Artisan-Windows-x64-Setup.exe
           if-no-files-found: error
   publish:
     needs: [macos-test, windows]
@@ -77,5 +90,5 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           cd packages
-          sha256sum *.zip > SHA256SUMS.txt
-          gh release create "$RELEASE_TAG" *.zip SHA256SUMS.txt --verify-tag --title "$RELEASE_TAG - Universal Mac bridge" --notes "One macOS universal2 ZIP for both Apple Silicon and Intel. The same ZIP was extracted and smoke-tested natively on both macOS 15 architectures, and all Mach-O files were checked for arm64 and x86_64 slices. Windows x64 is also included. No real BLE or Artisan roast was tested. Mac apps are ad-hoc signed, not Apple-notarized. Extract the whole folder and open START_HERE.command. Target NEXT firmware: 1.2.0; yellow/DRY limits still apply."
+          sha256sum *.zip *.exe > SHA256SUMS.txt
+          gh release create "$RELEASE_TAG" *.zip *.exe SHA256SUMS.txt --verify-tag --title "$RELEASE_TAG - Universal Mac bridge" --notes "One macOS universal2 ZIP for both Apple Silicon and Intel. The same ZIP was extracted and smoke-tested natively on both macOS 15 architectures, and all Mach-O files were checked for arm64 and x86_64 slices. Windows users can run the Setup.exe installer or extract the portable ZIP. No real BLE or Artisan roast was tested. Mac apps are ad-hoc signed, not Apple-notarized. Mac command-line users can extract the folder and open START_HERE.command. See the README for checked NEXT firmware versions and yellow/DRY limits."
